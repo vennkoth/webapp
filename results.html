@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Results Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .details-section { display: none; }
+        .details-section.active { display: block; }
+        .violation-report { max-height: 300px; overflow-y: auto; }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6 text-center">Exam Results Dashboard</h1>
+
+        <!-- Session List -->
+        <div id="session-list" class="space-y-4">
+            <!-- Session entries will be populated here -->
+        </div>
+
+        <!-- Detailed Section (Hidden by default) -->
+        <div id="details-template" class="details-section mt-6 p-6 bg-white rounded-lg shadow">
+            <button class="back-btn mb-4 px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400">Back</button>
+            <h2 class="text-2xl font-bold mb-4">Candidate Details</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <p><strong>Name:</strong> <span class="candidate-name"></span></p>
+                    <p><strong>Date of Birth:</strong> <span class="candidate-dob"></span></p>
+                    <p><strong>Roll Number:</strong> <span class="candidate-roll"></span></p>
+                    <p><strong>Age:</strong> <span class="candidate-age"></span></p>
+                </div>
+                <div>
+                    <p><strong>Score:</strong> <span class="candidate-score"></span> / <span class="total-score"></span></p>
+                    <p><strong>Job Position:</strong> <span class="job-position"></span></p>
+                    <p><strong>Exam Date:</strong> <span class="exam-date"></span></p>
+                    <p><strong>Timestamp:</strong> <span class="exam-timestamp"></span></p>
+                </div>
+            </div>
+
+            <!-- Media Download -->
+            <div class="mb-6">
+                <h3 class="text-xl font-semibold mb-2">Exam Media</h3>
+                <button class="download-video-btn mr-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Download Video</button>
+                <button class="download-audio-btn px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Download Audio</button>
+            </div>
+
+            <!-- Violation Report -->
+            <div>
+                <h3 class="text-xl font-semibold mb-2">Violation Report</h3>
+                <div class="violation-report p-4 bg-gray-50 rounded-lg">
+                    <ul class="violation-list space-y-2"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let db;
+
+        // Calculate age based on DOB
+        function calculateAge(dob) {
+            const birthDate = new Date(dob);
+            if (isNaN(birthDate.getTime())) {
+                return 'Invalid DOB';
+            }
+            const currentDate = new Date(); // Current date: 2025-05-21
+            let age = currentDate.getFullYear() - birthDate.getFullYear();
+            const monthDiff = currentDate.getMonth() - birthDate.getMonth();
+            if (monthDiff < 0 || (monthDiff === 0 && currentDate.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
+        }
+
+        // Initialize IndexedDB
+        async function initDatabase() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open('ExamProctorDB', 1);
+
+                request.onerror = (event) => reject(event.target.error);
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    resolve(db);
+                };
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains('users')) {
+                        const userStore = db.createObjectStore('users', { keyPath: 'rollNumber' });
+                        userStore.createIndex('name', 'name', { unique: false });
+                        userStore.createIndex('dob', 'dob', { unique: false });
+                    }
+                    if (!db.objectStoreNames.contains('examResults')) {
+                        const resultStore = db.createObjectStore('examResults', { keyPath: 'sessionID' });
+                        resultStore.createIndex('rollNumber', 'rollNumber', { unique: false });
+                        resultStore.createIndex('timestamp', 'timestamp', { unique: false });
+                    }
+                    if (!db.objectStoreNames.contains('violations')) {
+                        const violationStore = db.createObjectStore('violations', { keyPath: 'id', autoIncrement: true });
+                        violationStore.createIndex('sessionID', 'sessionID', { unique: false });
+                        violationStore.createIndex('type', 'type', { unique: false });
+                    }
+                };
+            });
+        }
+
+        // Fetch all exam results
+        async function fetchExamResults() {
+            const transaction = db.transaction(['examResults'], 'readonly');
+            const resultStore = transaction.objectStore('examResults');
+            return new Promise((resolve, reject) => {
+                const request = resultStore.getAll();
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // Fetch violations for a session
+        async function fetchViolations(sessionID) {
+            const transaction = db.transaction(['violations'], 'readonly');
+            const violationStore = transaction.objectStore('violations');
+            const index = violationStore.index('sessionID');
+            return new Promise((resolve, reject) => {
+                const request = index.getAll(sessionID);
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // Populate the session list without violations
+        async function populateSessionList() {
+            const results = await fetchExamResults();
+            const sessionList = document.getElementById('session-list');
+
+            if (results.length === 0) {
+                sessionList.innerHTML = '<p class="text-gray-500">No exam sessions found.</p>';
+                return;
+            }
+
+            const sessionsDiv = document.createElement('div');
+            sessionsDiv.className = 'p-4 bg-white rounded-lg shadow';
+            const sessionsUl = document.createElement('ul');
+            sessionsUl.className = 'space-y-4';
+
+            for (const result of results) {
+                const timestamp = new Date(result.timestamp);
+                const sessionItem = document.createElement('li');
+                sessionItem.innerHTML = `
+                    <button class="session-btn text-blue-500 hover:underline" data-session="${result.sessionID}">
+                        Session ID: ${result.sessionID} (Taken on ${timestamp.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' })}) (Timestamp: ${timestamp.toLocaleTimeString()})
+                    </button>
+                `;
+                sessionsUl.appendChild(sessionItem);
+            }
+
+            sessionsDiv.appendChild(sessionsUl);
+            sessionList.appendChild(sessionsDiv);
+
+            // Add event listeners for session buttons
+            document.querySelectorAll('.session-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const sessionID = btn.dataset.session;
+                    await showSessionDetails(sessionID);
+                    sessionList.className = 'space-y-4 hidden';
+                });
+            });
+        }
+
+        // Show session details
+        async function showSessionDetails(sessionID) {
+            const resultTransaction = db.transaction(['examResults'], 'readonly');
+            const resultStore = resultTransaction.objectStore('examResults');
+            const resultRequest = resultStore.get(sessionID);
+            
+            resultRequest.onsuccess = async () => {
+                const result = resultRequest.result;
+                const userTransaction = db.transaction(['users'], 'readonly');
+                const userStore = userTransaction.objectStore('users');
+                const userRequest = userStore.get(result.rollNumber);
+
+                userRequest.onsuccess = async () => {
+                    const user = userRequest.result;
+                    const violations = await fetchViolations(sessionID);
+
+                    const detailsTemplate = document.getElementById('details-template');
+                    const detailsSection = detailsTemplate.cloneNode(true);
+                    detailsSection.id = `details-${sessionID}`;
+                    detailsSection.classList.add('active');
+
+                    // Populate candidate details
+                    detailsSection.querySelector('.candidate-name').textContent = user.name;
+                    detailsSection.querySelector('.candidate-dob').textContent = user.dob;
+                    detailsSection.querySelector('.candidate-roll').textContent = user.rollNumber;
+                    const age = user.age !== undefined ? user.age : calculateAge(user.dob);
+                    detailsSection.querySelector('.candidate-age').textContent = age;
+                    detailsSection.querySelector('.candidate-score').textContent = result.score;
+                    detailsSection.querySelector('.total-score').textContent = result.total;
+                    detailsSection.querySelector('.job-position').textContent = 'Marketing'; // Hardcoded as per exam context
+                    detailsSection.querySelector('.exam-date').textContent = new Date(result.timestamp).toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    detailsSection.querySelector('.exam-timestamp').textContent = new Date(result.timestamp).toLocaleTimeString();
+
+                    // Violation report
+                    const violationList = detailsSection.querySelector('.violation-list');
+                    if (violations.length > 0) {
+                        violations.forEach(v => {
+                            const li = document.createElement('li');
+                            li.textContent = `${v.time}: ${v.type}`;
+                            violationList.appendChild(li);
+                        });
+                    } else {
+                        violationList.innerHTML = '<li>No violations recorded.</li>';
+                    }
+
+                    // Download buttons (placeholder functionality)
+                    const downloadVideoBtn = detailsSection.querySelector('.download-video-btn');
+                    const downloadAudioBtn = detailsSection.querySelector('.download-audio-btn');
+
+                    downloadVideoBtn.addEventListener('click', () => {
+                        const a = document.createElement('a');
+                        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent('Placeholder video content for ' + sessionID);
+                        a.download = `exam-video-${sessionID}.txt`;
+                        a.click();
+                    });
+
+                    downloadAudioBtn.addEventListener('click', () => {
+                        const a = document.createElement('a');
+                        a.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent('Placeholder audio content for ' + sessionID);
+                        a.download = `exam-audio-${sessionID}.txt`;
+                        a.click();
+                    });
+
+                    // Back button
+                    const backBtn = detailsSection.querySelector('.back-btn');
+                    backBtn.addEventListener('click', () => {
+                        detailsSection.remove();
+                        document.getElementById('session-list').className = 'space-y-4';
+                    });
+
+                    document.querySelector('.container').appendChild(detailsSection);
+                };
+            };
+        }
+
+        // Initialize the dashboard on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initDatabase();
+            await populateSessionList();
+        });
+    </script>
+</body>
+</html>
