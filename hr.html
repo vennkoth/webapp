@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HR Dashboard - Posspole</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+    }
+
+    .sidebar {
+      background-color: black; 
+      color: white;
+      width: 240px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar a {
+      color: white;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      border-radius: 0.5rem;
+      transition: background 0.3s;
+    }
+
+    .sidebar a:hover {
+      background-color: #1e232b;
+    }
+
+    .main-content {
+      margin-left: 260px;
+      padding: 2rem;
+    }
+
+    .download-btn {
+      background-color: #000;
+      color: white;
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .download-btn:hover {
+      background-color: #222;
+      transform: scale(1.05);
+    }
+
+    footer {
+      margin-top: 40px;
+      background-color: #f9f9f9;
+      padding: 20px;
+      text-align: center;
+      font-size: 14px;
+      border-top: 1px solid #e2e2e2;
+    }
+
+    input, select, button {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background: black;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <img src="posspolelogo.png" alt="Posspole Logo" class="h-6 mb-8">
+    <a href="#" class="bg-gray-700">Candidates</a>
+    <a href="#">Test</a>
+    <a href="#">Report</a>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <h1 class="text-4xl font-bold mb-6">HR Dashboard</h1>
+
+    <!-- Search and Filter -->
+    <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-wrap gap-4 items-center">
+      <input type="text" id="searchName" placeholder="Search by Name" class="w-64">
+      <input type="text" id="searchTime" placeholder="Search by Time (e.g., 10:00 AM)" class="w-64">
+      <select id="sortBy" class="w-48">
+        <option value="">Sort By</option>
+        <option value="name-asc">Name A-Z</option>
+        <option value="name-desc">Name Z-A</option>
+        <option value="time-asc">Time Asc</option>
+        <option value="time-desc">Time Desc</option>
+      </select>
+      <button onclick="applySearch()">Search</button>
+      <button onclick="clearSearch()" class="bg-gray-600 hover:bg-gray-800">Clear</button>
+    </div>
+
+    <!-- Users Table -->
+    <div class="bg-white p-6 rounded-xl shadow-md border border-gray-200">
+      <h2 class="text-2xl font-semibold mb-4">Candidates</h2>
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-left border-collapse">
+          <thead class="bg-gray-100 font-semibold">
+            <tr>
+              <th class="p-3">User ID</th>
+              <th class="p-3">Name</th>
+              <th class="p-3">Email</th>
+              <th class="p-3">Time</th>
+              <th class="p-3">Resume</th>
+            </tr>
+          </thead>
+          <tbody id="userTable" class="divide-y">
+            <!-- Rows go here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>About Us | <a href="https://posspole.com/" target="_blank" class="text-blue-600 underline">Visit Posspole</a></p>
+      <p>&copy; 2025 Posspole. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    const users = [
+      { id: "U101", name: "Aisha Nair", email: "aisha@example.com", time: "10:00 AM", resume: "resume_U101.pdf" },
+      { id: "U102", name: "Ravi Sharma", email: "ravi@example.com", time: "11:00 AM", resume: "resume_U102.pdf" },
+      { id: "U103", name: "Sneha Kapoor", email: "sneha@example.com", time: "2:00 PM", resume: "resume_U103.pdf" }
+    ];
+
+    function renderUsers(data) {
+      const table = document.getElementById("userTable");
+      table.innerHTML = "";
+      data.forEach(user => {
+        table.innerHTML += `
+          <tr>
+            <td class="p-3">${user.id}</td>
+            <td class="p-3">${user.name}</td>
+            <td class="p-3">${user.email}</td>
+            <td class="p-3">${user.time}</td>
+            <td class="p-3">
+              <a href="${user.resume}" class="download-btn" download>Download</a>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function parseTime(timeStr) {
+      const [time, meridian] = timeStr.split(" ");
+      let [hours, minutes] = time.split(":").map(Number);
+      if (meridian === "PM" && hours !== 12) hours += 12;
+      if (meridian === "AM" && hours === 12) hours = 0;
+      return hours * 60 + minutes;
+    }
+
+    function applySearch() {
+      const nameInput = document.getElementById("searchName").value.toLowerCase();
+      const timeInput = document.getElementById("searchTime").value.toLowerCase();
+      const sortBy = document.getElementById("sortBy").value;
+
+      let filtered = users.filter(user =>
+        user.name.toLowerCase().includes(nameInput) &&
+        user.time.toLowerCase().includes(timeInput)
+      );
+
+      switch (sortBy) {
+        case "name-asc":
+          filtered.sort((a, b) => a.name.localeCompare(b.name));
+          break;
+        case "name-desc":
+          filtered.sort((a, b) => b.name.localeCompare(a.name));
+          break;
+        case "time-asc":
+          filtered.sort((a, b) => parseTime(a.time) - parseTime(b.time));
+          break;
+        case "time-desc":
+          filtered.sort((a, b) => parseTime(b.time) - parseTime(a.time));
+          break;
+      }
+
+      renderUsers(filtered);
+    }
+
+    function clearSearch() {
+      document.getElementById("searchName").value = "";
+      document.getElementById("searchTime").value = "";
+      document.getElementById("sortBy").value = "";
+      renderUsers(users);
+    }
+
+    window.onload = () => renderUsers(users);
+  </script>
+</body>
+</html>
