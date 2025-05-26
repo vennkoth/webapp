@@ -80,6 +80,49 @@
     button:hover {
       background: #333;
     }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 800px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: black;
+    }
+
+    .report-section {
+      margin-bottom: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      border: 1px solid #e9ecef;
+    }
   </style>
 </head>
 <body>
@@ -87,9 +130,9 @@
  <!-- Sidebar -->
  <div class="sidebar">
   <img src="posspolelogo.png" alt="Posspole Logo" class="h-6 mb-8 mx-auto">
-  <a href="hr.html" class="bg-gray-700">Candidates</a>
+  <a href="hr.html" class="bg-gray-700"id="reportLink">Candidates</a>
   <a href="test.html" class="px-5 py-3 bg-gray-700 text-white">Test</a>
-  <a href="#">Report</a>
+  <a href="report.html">Report</a>
   <a href="#" class="mt-auto px-5 py-3 hover:bg-gray-700 hover:text-white">Settings</a>
 </div>
 
@@ -133,6 +176,28 @@
       </div>
     </div>
 
+    <!-- Report Section -->
+    <div id="reportSection" class="mt-8 bg-white p-6 rounded-xl shadow-md border border-gray-200" style="display: none;">
+      <h2 class="text-2xl font-semibold mb-4">Candidate Reports</h2>
+      <div id="reportContent" class="space-y-6">
+        <!-- Report content will be populated here -->
+      </div>
+    </div>
+
+    <!-- Candidate Report Modal -->
+    <div id="reportModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 id="modalTitle" class="text-2xl font-bold mb-4">Candidate Report</h2>
+        <div id="modalContent">
+          <!-- Modal content will be populated here -->
+        </div>
+        <div class="mt-6 text-right">
+          <button id="downloadReportBtn" class="download-btn">Download Report</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Footer -->
     <footer>
       <p>About Us | <a href="https://posspole.com/" target="_blank" class="text-blue-600 underline">Visit Posspole</a></p>
@@ -143,9 +208,42 @@
   <!-- JavaScript -->
   <script>
     const users = [
-      { id: "U101", name: "Aisha Nair", email: "aisha@example.com", time: "10:00 AM", resume: "resume_U101.pdf" },
-      { id: "U102", name: "Ravi Sharma", email: "ravi@example.com", time: "11:00 AM", resume: "resume_U102.pdf" },
-      { id: "U103", name: "Sneha Kapoor", email: "sneha@example.com", time: "2:00 PM", resume: "resume_U103.pdf" }
+      { 
+        id: "U101", 
+        name: "Aisha Nair", 
+        email: "aisha@example.com", 
+        time: "10:00 AM", 
+        resume: "resume_U101.pdf",
+        skills: ["JavaScript", "React", "Node.js"],
+        experience: "5 years",
+        education: "B.Tech in Computer Science",
+        interview_score: 85,
+        notes: "Strong frontend skills, good communication"
+      },
+      { 
+        id: "U102", 
+        name: "Ravi Sharma", 
+        email: "ravi@example.com", 
+        time: "11:00 AM", 
+        resume: "resume_U102.pdf",
+        skills: ["Python", "Django", "SQL"],
+        experience: "3 years",
+        education: "M.Sc in Data Science",
+        interview_score: 78,
+        notes: "Good problem-solving skills, needs improvement in communication"
+      },
+      { 
+        id: "U103", 
+        name: "Sneha Kapoor", 
+        email: "sneha@example.com", 
+        time: "2:00 PM", 
+        resume: "resume_U103.pdf",
+        skills: ["Java", "Spring Boot", "Microservices"],
+        experience: "7 years",
+        education: "B.E in Information Technology",
+        interview_score: 92,
+        notes: "Excellent technical knowledge and leadership potential"
+      }
     ];
 
     function renderUsers(data) {
@@ -209,7 +307,230 @@
       renderUsers(users);
     }
 
-    window.onload = () => renderUsers(users);
+    // Show individual candidate report in new tab
+    function showReport(userId) {
+      const user = users.find(u => u.id === userId);
+      if (!user) return;
+      
+      // Open in new tab
+      window.open(`report.html?id=${user.id}`, '_blank');
+    }
+    
+    // Generate recommendation based on score
+    function getRecommendation(score) {
+      if (score >= 90) {
+        return "<span class='text-green-600 font-semibold'>Highly Recommended</span> - Excellent candidate with strong potential.";
+      } else if (score >= 75) {
+        return "<span class='text-blue-600 font-semibold'>Recommended</span> - Good candidate with solid skills.";
+      } else if (score >= 60) {
+        return "<span class='text-yellow-600 font-semibold'>Consider</span> - Average candidate, may need additional training.";
+      } else {
+        return "<span class='text-red-600 font-semibold'>Not Recommended</span> - Does not meet our requirements at this time.";
+      }
+    }
+    
+    // Generate and download PDF report
+    // Remove the getRecommendation function
+    
+    // Modify the downloadReport function to remove recommendation
+    function downloadReport(user) {
+      const reportContent = `
+        CANDIDATE REPORT
+        ===============================
+        
+        PERSONAL INFORMATION
+        ID: ${user.id}
+        Name: ${user.name}
+        Email: ${user.email}
+        Interview Time: ${user.time}
+        
+        PROFESSIONAL BACKGROUND
+        Experience: ${user.experience}
+        Education: ${user.education}
+        Skills: ${user.skills.join(", ")}
+        
+        INTERVIEW ASSESSMENT
+        Score: ${user.interview_score}/100
+        Notes: ${user.notes}
+        
+        ===============================
+        Generated by Posspole HR System
+        Date: ${new Date().toLocaleDateString()}
+      `;
+      
+      // Create a blob and download it
+      const blob = new Blob([reportContent], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${user.name.replace(/ /g, '_')}_Report.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    
+    // In the window.onload function, remove the Recommendation section
+    function populateReports() {
+      const reportContent = document.getElementById("reportContent");
+      reportContent.innerHTML = "";
+      
+      users.forEach(user => {
+        reportContent.innerHTML += `
+          <div class="p-4 border rounded-lg hover:shadow-md transition-shadow">
+            <div class="flex justify-between items-center">
+              <h3 class="text-xl font-semibold">${user.name}</h3>
+              <span class="text-sm text-gray-500">${user.id}</span>
+            </div>
+            <p class="text-gray-600 mt-2">Interview Time: ${user.time}</p>
+            <p class="mt-2"><strong>Score:</strong> ${user.interview_score}/100</p>
+            <div class="w-full bg-gray-200 rounded-full h-2 mt-1 mb-3">
+              <div class="bg-black h-2 rounded-full" style="width: ${user.interview_score}%"></div>
+            </div>
+            <div class="flex justify-end items-center mt-4">
+              <button onclick="showReport('${user.id}')" class="download-btn">View Details</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+    
+    // Helper function for score color
+    function getScoreColorClass(score) {
+      if (score >= 90) return "text-green-600 font-semibold";
+      if (score >= 75) return "text-blue-600 font-semibold";
+      if (score >= 60) return "text-yellow-600 font-semibold";
+      return "text-red-600 font-semibold";
+    }
+    
+    // Helper function for score label
+    function getScoreLabel(score) {
+      if (score >= 90) return "Highly Recommended";
+      if (score >= 75) return "Recommended";
+      if (score >= 60) return "Consider";
+      return "Not Recommended"; 
+    }
+    
+    // Close modal when clicking the X
+    document.querySelector(".close").onclick = function() {
+      document.getElementById("reportModal").style.display = "none";
+    }
+    
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+      const modal = document.getElementById("reportModal");
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+    
+    // Toggle report section visibility
+    document.getElementById("reportLink").onclick = function(e) {
+      e.preventDefault();
+      const reportSection = document.getElementById("reportSection");
+      
+      // Hide the candidates section when showing reports
+      const candidatesSection = document.querySelector(".bg-white.p-6.rounded-xl");
+      
+      if (reportSection.style.display === "none") {
+        // Show reports, hide candidates
+        reportSection.style.display = "block";
+        candidatesSection.style.display = "none";
+        populateReports();
+      } else {
+        // Hide reports, show candidates
+        reportSection.style.display = "none";
+        candidatesSection.style.display = "block";
+      }
+    }
+
+    window.onload = () => {
+      renderUsers(users);
+      populateReports();
+      
+      // Check if this page was opened with a query parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get('id');
+      
+      if (userId) {
+        // We're in report view mode
+        document.querySelector('.sidebar').style.display = 'none';
+        document.querySelector('.main-content').style.marginLeft = '0';
+        
+        const user = users.find(u => u.id === userId);
+        if (user) {
+          // Hide regular dashboard content
+          document.querySelectorAll('.main-content > *').forEach(el => {
+            el.style.display = 'none';
+          });
+          
+          // Create report container
+          const reportContainer = document.createElement('div');
+          reportContainer.className = 'bg-white p-6 rounded-xl shadow-md border border-gray-200';
+          document.querySelector('.main-content').appendChild(reportContainer);
+          
+          // Add report header
+          const header = document.createElement('div');
+          header.className = 'flex justify-between items-center mb-6';
+          header.innerHTML = `
+            <h1 class="text-3xl font-bold">${user.name} - Detailed Report</h1>
+            <span class="text-lg text-gray-500">${user.id}</span>
+          `;
+          reportContainer.appendChild(header);
+          
+          // Generate report content
+          const reportContent = document.createElement('div');
+          reportContent.innerHTML = `
+            <div class="report-section">
+              <h3 class="text-xl font-semibold mb-2">Personal Information</h3>
+              <p><strong>ID:</strong> ${user.id}</p>
+              <p><strong>Name:</strong> ${user.name}</p>
+              <p><strong>Email:</strong> ${user.email}</p>
+              <p><strong>Interview Time:</strong> ${user.time}</p>
+            </div>
+            
+            <div class="report-section">
+              <h3 class="text-xl font-semibold mb-2">Professional Background</h3>
+              <p><strong>Experience:</strong> ${user.experience}</p>
+              <p><strong>Education:</strong> ${user.education}</p>
+              <p><strong>Skills:</strong> ${user.skills.join(", ")}</p>
+            </div>
+            
+            <div class="report-section">
+              <h3 class="text-xl font-semibold mb-2">Interview Assessment</h3>
+              <p><strong>Score:</strong> ${user.interview_score}/100</p>
+              <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2 mb-4">
+                <div class="bg-black h-2.5 rounded-full" style="width: ${user.interview_score}%"></div>
+              </div>
+              <p><strong>Notes:</strong> ${user.notes}</p>
+            </div>
+            
+            <div class="report-section">
+              <h3 class="text-xl font-semibold mb-2">Recommendation</h3>
+              <p>${getRecommendation(user.interview_score)}</p>
+            </div>
+          `;
+          reportContainer.appendChild(reportContent);
+          
+          // Add download button
+          const buttonContainer = document.createElement('div');
+          buttonContainer.className = 'mt-6 text-right';
+          const downloadButton = document.createElement('button');
+          downloadButton.className = 'download-btn';
+          downloadButton.textContent = 'Download Report';
+          downloadButton.onclick = () => downloadReport(user);
+          buttonContainer.appendChild(downloadButton);
+          reportContainer.appendChild(buttonContainer);
+          
+          // Add back button
+          const backButton = document.createElement('button');
+          backButton.className = 'mt-4 mr-4 px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300';
+          backButton.textContent = '← Back to Dashboard';
+          backButton.onclick = () => window.close();
+          buttonContainer.prepend(backButton);
+        }
+      }
+    };
   </script>
 </body>
 </html>
