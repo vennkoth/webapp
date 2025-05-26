@@ -7,24 +7,61 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .sidebar {
-            background-color: #1a1a1a;
-            color: #ffffff;
-            height: 100vh;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding-top: 20px;
-        }
-        .sidebar a {
-            padding: 15px 20px;
-            display: block;
-            color: #ffffff;
-            text-decoration: none;
-        }
-        .sidebar a:hover {
-            background-color: #333333;
-        }
+    background-color: #1a1a1a; /* Dark sidebar background */
+    color: #ffffff;            /* White text */
+    height: 100vh;             /* Full height */
+    width: 250px;              /* Fixed width */
+    position: fixed;           /* Sticks to the left */
+    top: 0;
+    left: 0;
+    padding-top: 20px;
+}
+
+.sidebar a {
+    padding: 15px 20px;
+    display: block;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    background-color: #333333; /* Hover effect */
+}
+body {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+    }
+
+    .sidebar {
+      background-color: black; 
+      color: white;
+      width: 240px;
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar a {
+      color: white;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      border-radius: 0.5rem;
+      transition: background 0.3s;
+      text-decoration: none;
+    }
+
+    .sidebar a:hover {
+      background-color: #1e232b;
+    }
+
+    .sidebar a.active {
+      background-color: #374151; /* Tailwind's bg-gray-700 */
+    }
+
         .content {
             margin-left: 250px;
             padding: 20px;
@@ -92,23 +129,14 @@
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="flex items-center px-4 py-3">
-            <svg class="w-8 h-8 mr-2" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M2 12h20"/>
-                <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10"/>
-                <path d="M12 2a15.3 15.3 0 0 0-4 10 15.3 15.3 0 0 0 4 10"/>
-            </svg>
-            <h1 class="text-xl font-bold">POSSPOLÉ</h1>
-        </div>
-        <a href="#" class="mt-4">Dashboard</a>
-        <a href="#" class="bg-[#6b7280] text-[#1a1a1a]">Test</a>
-        <a href="#">TestUser</a>
-        <a href="#">Report Analysis</a>
-        <a href="#" class="mt-auto">Settings</a>
+    <div class="sidebar flex flex-col h-full">
+        <img src="posspolelogo.png" alt="Posspole Logo" class="h-6 mb-8 mx-auto">
+        <a href="hr.html" class="bg-gray-700">Candidates</a>
+        <a href="test.html" class="px-5 py-3 bg-gray-700 text-white">Test</a>
+        <a href="#">Report</a>
+        <a href="#" class="mt-auto px-5 py-3 hover:bg-gray-700 hover:text-white">Settings</a>
     </div>
+    
 
     <!-- Main Content -->
     <div class="content">
