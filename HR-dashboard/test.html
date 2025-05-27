@@ -7,20 +7,31 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .sidebar {
-            background-color: #1a1a1a;
-            color: #ffffff;
+            background-color: black;
+            color: white;
+            width: 240px;
             height: 100vh;
-            width: 250px;
             position: fixed;
             top: 0;
             left: 0;
-            padding-top: 20px;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
         }
         .sidebar a {
-            padding: 15px 20px;
-            display: block;
-            color: #ffffff;
+            color: white;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background 0.3s;
             text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #1e232b;
+        }
+        .sidebar a.active {
+            background-color: #374151;
+            color: white;
         }
         .sidebar a:hover {
             background-color: #333333;
@@ -123,11 +134,11 @@
 </head>
 <body>
     <div class="sidebar flex flex-col h-full">
-        <img src="posspolelogo.png" alt="Posspole Logo" class="h-6 mb-8 mx-auto">
-        <a href="hr.html" class="bg-gray-700">Candidates</a>
-        <a href="test.html" class="px-5 py-3 bg-gray-700 text-white">Test</a>
-        <a href="report.html">Report</a>
-        <a href="#" class="mt-auto px-5 py-3 hover:bg-gray-700 hover:text-white">Settings</a>
+        <img src="/webapp/components/posspolelogo.png" alt="Posspole Logo" class="h-6 mb-8 mx-auto">
+        <a href="/webapp/HR-dashboard/hr.html" class="hover:bg-gray-700 hover:text-white">Candidates</a>
+        <a href="/webapp/HR-dashboard/test.html" class="active hover:bg-gray-700 hover:text-white">Test</a>
+        <a href="/webapp/HR-dashboard/report.html" class="hover:bg-gray-700 hover:text-white">Report</a>
+        <a href="#" class="mt-auto hover:bg-gray-700 hover:text-white">Settings</a>
     </div>
 
     <!-- Main Content -->
