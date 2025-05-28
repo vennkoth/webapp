@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Register - Posspole</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -15,6 +15,47 @@
     body::-webkit-scrollbar {
       display: none;
     }
+    .password-rule {
+      font-size: 0.875rem; /* text-sm */
+      color: #6b7280; /* gray-500 */
+      margin-top: 0.25rem;
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+    .password-rule.valid {
+      color: #22c55e; /* green-500 */
+    }
+    .password-rule .checkmark {
+      display: none;
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+    }
+    .password-rule.valid .checkmark {
+      display: inline-block;
+    }
+    .checkmark__circle {
+      stroke: #22c55e;
+      stroke-width: 2;
+      fill: none;
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+    .checkmark__check {
+      stroke: #22c55e;
+      stroke-width: 2;
+      fill: none;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.3s forwards;
+    }
+    @keyframes stroke {
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
   </style>
 </head>
 <body class="bg-white flex justify-center items-center min-h-screen px-4">
@@ -22,32 +63,16 @@
   <div class="w-full max-w-md bg-white p-6 rounded-2xl shadow-xl border border-gray-200 text-center">
     <!-- Logo -->
     <div class="flex justify-center mb-6">
-      <a href="https://www.posspole.com/" target="_blank">
-        <img src="/webapp/components/Asset 4posspole_logo_svg.png" alt="Posspole Logo" class="h-16">
+      <a href="https://www.posspole.com/" target="_blank" rel="noopener noreferrer">
+        <img src="/webapp/components/Asset 4posspole_logo_svg.png" alt="Posspole Logo" class="h-13" />
       </a>
     </div>
 
-    <h2 class="text-xl font-semibold mb-4 text-black">REGISTER</h2>
-
-    <!-- Toggle Button: Student | Admin -->
-    <div class="flex justify-center mb-4">
-      <div class="inline-flex bg-white border border-black rounded-full p-1">
-        <button id="studentTab" type="button"
-          class="px-6 py-1 rounded-full text-sm font-medium bg-black text-white transition duration-200">
-          Student
-        </button>
-        <button id="adminTab" type="button"
-          class="px-6 py-1 rounded-full text-sm font-medium text-black transition duration-200">
-          Admin
-        </button>
-      </div>
-    </div>
+    <h2 class="text-xl font-semibold mb-4 text-black"> STUDENT REGISTER</h2>
 
     <!-- Register Form -->
-    <form id="registerForm" action="/webapp/login page html/register.html" method="POST" enctype="multipart/form-data" autocomplete="off" class="space-y-3 text-left" onsubmit="event.preventDefault(); window.location.href='/webapp/login-page/login.html';">
-      <input type="hidden" name="role" id="roleInput" value="student" />
+    <form id="registerForm" action="/register" method="POST" enctype="multipart/form-data" autocomplete="off" class="space-y-3 text-left" novalidate>
 
-      <!-- Shared Fields -->
       <div>
         <label for="full_name" class="block mb-1 text-sm font-medium text-black">Full Name</label>
         <input type="text" name="full_name" id="full_name" required
@@ -60,42 +85,8 @@
                class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" />
       </div>
 
-      <!-- Admin Fields -->
-      <div id="adminFields" class="hidden space-y-3">
-        <div>
-          <label for="company_name" class="block mb-1 text-sm font-medium text-black">Company Name</label>
-          <input type="text" name="company_name" id="company_name"
-                 class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" />
-        </div>
-        <div>
-          <label for="designation" class="block mb-1 text-sm font-medium text-black">Designation</label>
-          <input type="text" name="designation" id="designation"
-                 class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" />
-        </div>
-        <div>
-          <label for="company_email" class="block mb-1 text-sm font-medium text-black">Company Email</label>
-          <input type="email" name="company_email" id="company_email"
-                 class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" />
-        </div>
-        <div>
-          <label for="company_website" class="block mb-1 text-sm font-medium text-black">Company Website</label>
-          <input type="url" name="company_website" id="company_website"
-                 class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" />
-        </div>
-        <div>
-          <label for="company_address" class="block mb-1 text-sm font-medium text-black">Company Address</label>
-          <textarea name="company_address" id="company_address" rows="2"
-                    class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black"></textarea>
-        </div>
-        <div>
-          <label for="admin_dob" class="block mb-1 text-sm font-medium text-black">Date of Birth</label>
-          <input type="date" name="admin_dob" id="admin_dob"
-                 class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" />
-        </div>
-      </div>
-
       <!-- Student Fields -->
-      <div id="studentFields" class="space-y-3">
+      <div class="space-y-3">
         <div>
           <label for="dob" class="block mb-1 text-sm font-medium text-black">Date of Birth</label>
           <input type="date" name="dob" id="dob"
@@ -106,7 +97,6 @@
           <input type="text" name="college_name" id="college_name"
                  class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" />
         </div>
-        
         <div>
           <label for="course" class="block mb-1 text-sm font-medium text-black">Course</label>
           <input type="text" name="course" id="course"
@@ -133,14 +123,66 @@
       <!-- Password -->
       <div>
         <label for="password" class="block mb-1 text-sm font-medium text-black">Password</label>
-        <input type="password" name="password" id="password" required
-               class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" />
+        <div class="relative">
+          <input type="password" name="password" id="password" required
+                 class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" aria-describedby="passwordHelp" />
+          <button type="button" id="togglePassword" class="absolute inset-y-0 right-3 flex items-center text-gray-600 focus:outline-none" aria-label="Toggle password visibility">
+            <!-- Eye icon SVG -->
+            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </button>
+        </div>
+        <div id="passwordRules" class="mt-2 text-left" aria-live="polite" aria-atomic="true">
+          <p id="ruleLength" class="password-rule">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle class="checkmark__circle" cx="26" cy="26" r="25"/>
+              <path class="checkmark__check" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+            At least 8 characters
+          </p>
+          <p id="ruleUpper" class="password-rule">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle class="checkmark__circle" cx="26" cy="26" r="25"/>
+              <path class="checkmark__check" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+            At least one uppercase letter
+          </p>
+          <p id="ruleNumber" class="password-rule">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle class="checkmark__circle" cx="26" cy="26" r="25"/>
+              <path class="checkmark__check" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+            At least one number
+          </p>
+          <p id="ruleSpecial" class="password-rule">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+              <circle class="checkmark__circle" cx="26" cy="26" r="25"/>
+              <path class="checkmark__check" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+            At least one special character (!@#$%^&*)
+          </p>
+        </div>
       </div>
 
       <div>
         <label for="confirm_password" class="block mb-1 text-sm font-medium text-black">Confirm Password</label>
-        <input type="password" name="confirm_password" id="confirm_password" required
-               class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" />
+        <div class="relative">
+          <input type="password" name="confirm_password" id="confirm_password" required
+                 class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" />
+          <button type="button" id="toggleConfirmPassword" class="absolute inset-y-0 right-3 flex items-center text-gray-600 focus:outline-none" aria-label="Toggle confirm password visibility">
+            <!-- Eye icon SVG -->
+            <svg id="eyeIconConfirm" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Submit Button -->
@@ -156,36 +198,76 @@
     </p>
   </div>
 
-  <!-- Toggle Script -->
+  <!-- Show Password and Validation Script -->
   <script>
-    const studentTab = document.getElementById("studentTab");
-    const adminTab = document.getElementById("adminTab");
-    const roleInput = document.getElementById("roleInput");
-    const adminFields = document.getElementById("adminFields");
-    const studentFields = document.getElementById("studentFields");
+    // Password toggle button function
+    function setupToggle(toggleBtnId, inputId, eyeIconId) {
+      const toggleBtn = document.getElementById(toggleBtnId);
+      const input = document.getElementById(inputId);
+      const eyeIcon = toggleBtn.querySelector('svg');
 
-    studentTab.addEventListener("click", () => {
-      studentTab.classList.add("bg-black", "text-white");
-      studentTab.classList.remove("text-black");
-      adminTab.classList.remove("bg-black", "text-white");
-      adminTab.classList.add("text-black");
-      roleInput.value = "student";
-      adminFields.classList.add("hidden");
-      studentFields.classList.remove("hidden");
-    });
+      toggleBtn.addEventListener('click', () => {
+        const type = input.getAttribute('type');
+        if (type === 'password') {
+          input.setAttribute('type', 'text');
+          // Change eye icon to eye-off
+          eyeIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a10.06 10.06 0 012.34-4.154M3 3l18 18" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.477 10.477a3 3 0 004.243 4.243" />
+          `;
+        } else {
+          input.setAttribute('type', 'password');
+          // Change back to eye icon
+          eyeIcon.innerHTML = `
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+          `;
+        }
+      });
+    }
 
-    adminTab.addEventListener("click", () => {
-      adminTab.classList.add("bg-black", "text-white");
-      adminTab.classList.remove("text-black");
-      studentTab.classList.remove("bg-black", "text-white");
-      studentTab.classList.add("text-black");
-      roleInput.value = "admin";
-      adminFields.classList.remove("hidden");
-      studentFields.classList.add("hidden");
+    setupToggle('togglePassword', 'password', 'eyeIcon');
+    setupToggle('toggleConfirmPassword', 'confirm_password', 'eyeIconConfirm');
+
+    // Password validation rules
+    const passwordInput = document.getElementById('password');
+    const ruleLength = document.getElementById('ruleLength');
+    const ruleUpper = document.getElementById('ruleUpper');
+    const ruleNumber = document.getElementById('ruleNumber');
+    const ruleSpecial = document.getElementById('ruleSpecial');
+
+    passwordInput.addEventListener('input', () => {
+      const value = passwordInput.value;
+
+      // Length at least 8
+      if (value.length >= 8) {
+        ruleLength.classList.add('valid');
+      } else {
+        ruleLength.classList.remove('valid');
+      }
+
+      // Uppercase letter check
+      if (/[A-Z]/.test(value)) {
+        ruleUpper.classList.add('valid');
+      } else {
+        ruleUpper.classList.remove('valid');
+      }
+
+      // Number check
+      if (/\d/.test(value)) {
+        ruleNumber.classList.add('valid');
+      } else {
+        ruleNumber.classList.remove('valid');
+      }
+
+      // Special character check
+      if (/[!@#$%^&*]/.test(value)) {
+        ruleSpecial.classList.add('valid');
+      } else {
+        ruleSpecial.classList.remove('valid');
+      }
     });
   </script>
+
 </body>
-    </div>
-    <script src="/webapp/login-page/register.js"></script>
-  </body>
 </html>
