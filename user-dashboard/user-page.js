@@ -76,7 +76,45 @@ function initializeSectionNavigation() {
 }
 
 // Initialize all functionality when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     userProfile.updateUIElements();
     initializeSectionNavigation();
+
+    // Performance Trends (Line Chart)
+    const perfCtx = document.getElementById('performanceChart').getContext('2d');
+    new Chart(perfCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Score',
+                data: [70, 75, 80, 78, 85, 90],
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37,99,235,0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // Score Breakdown (Doughnut Chart)
+    const scoreCtx = document.getElementById('scoreBreakdownChart').getContext('2d');
+    new Chart(scoreCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Passed', 'Failed', 'Upcoming'],
+            datasets: [{
+                data: [5, 1, 2],
+                backgroundColor: ['#22c55e', '#ef4444', '#f59e42']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
 });

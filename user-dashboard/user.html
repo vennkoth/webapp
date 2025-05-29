@@ -254,6 +254,17 @@
                     </div>
                 </div>
             </div>
+            <!-- Add Chart.js graphs below -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <h3 class="text-lg font-semibold mb-4">Performance Trends</h3>
+                    <canvas id="performanceChart" height="200"></canvas>
+                </div>
+                <div class="bg-white rounded-lg p-6 shadow">
+                    <h3 class="text-lg font-semibold mb-4">Score Breakdown</h3>
+                    <canvas id="scoreBreakdownChart" height="200"></canvas>
+                </div>
+            </div>
             <!-- End Status Report Section -->
         </div>
         <!-- End Dashboard Content Section -->
@@ -382,6 +393,8 @@
         });
     });
 </script>
+<!-- Add Chart.js CDN before your closing </body> tag -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="user-page.js"></script>
 
 </html>
