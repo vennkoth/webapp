@@ -343,6 +343,24 @@ function shuffleArray(array, shuffleOptions = false) {
     return array;
 }
 
+// ===== Age Calculation Function =====
+function calculateAge(dob) {
+    // Validate the DOB input
+    const birthDate = new Date(dob);
+    if (isNaN(birthDate.getTime())) {
+        // Invalid date format
+        return -1;
+    }
+
+    const currentDate = new Date(); // Use the current date (2025-05-21)
+    let age = currentDate.getFullYear() - birthDate.getFullYear();
+    const monthDiff = currentDate.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && currentDate.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+}
+
 // ===== Webcam Functions =====
 async function startWebcam() {
     try {
@@ -757,13 +775,41 @@ async function startExam() {
         startBtn.textContent = 'Begin Examination';
         return;
     }
-    
+
+    // Calculate age based on DOB
+    const age = calculateAge(userDob);
+    console.log(`User age: ${age}`);
+
+    // Check if the DOB is invalid
+    if (age === -1) {
+        alert('Invalid date of birth. Please select a valid date using the calendar.');
+        startBtn.disabled = false;
+        startBtn.textContent = 'Begin Examination';
+        return;
+    }
+
+    // Check if the user is under 18 or over 80
+    if (age < 18) {
+        alert('You must be 18 or older to take this exam.\nIf you believe this is an error, please contact support at support@examapp.com.');
+        startBtn.disabled = false;
+        startBtn.textContent = 'Begin Examination';
+        return;
+    }
+
+    if (age > 80) {
+        alert('You must be 80 or younger to take this exam.\nIf you believe this is an error, please contact support at support@examapp.com.');
+        startBtn.disabled = false;
+        startBtn.textContent = 'Begin Examination';
+        return;
+    }
+
     try {
         await initDatabase();
         await saveUserData({
             name: userName,
             dob: userDob,
             rollNumber: userRoll,
+            age: age, // Store the calculated age
             timestamp: new Date().toISOString()
         });
     } catch (err) {
@@ -796,7 +842,7 @@ async function startExam() {
         violationLog.push({
             type: "EXAM STARTED",
             time: new Date().toLocaleTimeString(),
-            details: `Session ID: ${sessionID}`,
+            details: `Session ID: ${sessionID}, Age: ${age}`,
             platform: navigator.platform,
             userAgent: navigator.userAgent,
             rollNumber: userRoll,
@@ -1188,199 +1234,76 @@ function endExam(force = false) {
         }
     });
 
-    const writtenQuestionIndex = examData.questions.findIndex(q => q.type === "written");
-    const writtenAnswer = localStorage.getItem(`q${writtenQuestionIndex}`) || 'No answer provided';
+    const answers = examData.questions.map((q, index) => ({
+        question: q.question,
+        type: q.type || 'multiple-choice',
+        answer: localStorage.getItem(`q${index}`) || 'Not answered',
+        originalIndex: q.originalIndex
+    }));
 
-    examData.questions.forEach((_, index) => {
-        localStorage.removeItem(`q${index}`);
-    });
-    sessionStorage.setItem('examSubmitted', 'true');
+    const resultData = {
+        sessionID,
+        rollNumber: document.getElementById('user-roll')?.value,
+        score,
+        total: examData.questions.filter(q => !q.type).length,
+        answers,
+        timestamp: new Date().toISOString()
+    };
 
-    const violationList = violationLog
-        .filter(v => !v.isInformational)
-        .map((v, i) => `
-            <div class="text-md">${i+1}. ${v.type} (${v.time})</div>
-        `).join('');
-
-    const faceViolationList = faceViolationLog.map((v, i) => `
-        <div class="text-md">${i+1}. ${v.type} (${v.time})</div>
-    `).join('');
-
-    const audioViolationList = audioViolationLog.map((v, i) => `
-        <div class="text-md">${i+1}. ${v.type} (${v.time})</div>
-    `).join('');
-
-    examContainer.innerHTML = `
-        <div class="text-center p-8">
-            <h2 class="text-3xl font-bold mb-6">Exam Completed!</h2>
-            <p class="text-2xl mb-4">Score: ${score}/2 (written answer not scored)</p>
-            <p class="text-md mb-8">Session ID: ${sessionID}</p>
-            <div class="text-left mb-8">
-                <h3 class="text-xl font-semibold mb-4">Security Log:</h3>
-                ${violationList || '<p class="text-md">No security violations detected.</p>'}
+    Promise.all([
+        saveExamResult(resultData),
+        saveViolations([...violationLog, ...faceViolationLog, ...audioViolationLog])
+    ]).then(() => {
+        sessionStorage.setItem('examSubmitted', 'true');
+        examContainer.innerHTML = `
+            <div class="text-center">
+                <h2 class="text-2xl font-bold">Exam ${force ? 'Terminated' : 'Submitted'}</h2>
+                <p class="mt-4">${force ? 'Your exam was terminated due to multiple violations.' : 'Thank you for completing the exam!'}</p>
+                <p class="mt-2">Your score: ${score} / ${examData.questions.filter(q => !q.type).length}</p>
+                <p class="mt-2">Violations recorded: ${violations} (after 2 warnings)</p>
+                <p class="mt-2">Session ID: ${sessionID}</p>
             </div>
-            <div class="text-left mb-8">
-                <h3 class="text-xl font-semibold mb-4">Face Detection Violation Report:</h3>
-                ${faceViolationList || '<p class="text-md">No face detection violations detected.</p>'}
+        `;
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
+        }
+    }).catch(err => {
+        console.error('Error saving exam data:', err);
+        examContainer.innerHTML = `
+            <div class="text-center">
+                <h2 class="text-2xl font-bold">Error</h2>
+                <p class="mt-4">There was an error saving your exam. Please contact support.</p>
+                <p class="mt-2">Session ID: ${sessionID}</p>
             </div>
-            <div class="text-left mb-8">
-                <h3 class="text-xl font-semibold mb-4">Audio Violation Report:</h3>
-                ${audioViolationList || '<p class="text-md">No audio violations detected.</p>'}
-            </div>
-            <div class="text-left">
-                <h3 class="text-xl font-semibold mb-4">Written Answer:</h3>
-                <p class="text-md">${writtenAnswer}</p>
-            </div>
-            ${warnings >= 2 && violations >= 3 ? '<p class="text-red-500 text-md mt-4">Terminated due to violations</p>' : ''}
-        </div>
-    `;
-
-    if (document.fullscreenElement) document.exitFullscreen();
-}
-
-// ===== Submit Exam =====
-function submitExam() {
-    submitConfirmation.style.display = 'flex';
-}
-
-function confirmSubmit() {
-    examEnded = true;
-    clearInterval(timerInterval);
-    
-    if (audioLevelBar) audioLevelBar.parentElement.style.display = 'none';
-    stopAudioMonitoring();
-    stopWebcam();
-    
-    saveAnswers();
-    
-    let score = 0;
-    let totalPossible = 0;
-    
-    examData.questions.forEach((question, index) => {
-        if (!question.type) {
-            totalPossible++;
-            const userAnswer = localStorage.getItem(`q${index}`);
-            if (userAnswer !== null && parseInt(userAnswer) === question.answer) {
-                score++;
-            }
+        `;
+        if (document.fullscreenElement) {
+            document.exitFullscreen().catch(() => {});
         }
     });
-    
-    try {
-        const userRoll = document.getElementById('user-roll')?.value.trim();
-        
-        saveExamResult({
-            sessionID,
-            rollNumber: userRoll,
-            score,
-            totalPossible,
-            duration: examData.duration - timeLeft,
-            timestamp: new Date().toISOString(),
-            answers: examData.questions.map((_, index) => ({
-                questionIndex: index,
-                answer: localStorage.getItem(`q${index}`) || ''
-            }))
-        });
-        
-        const allViolations = [
-            ...violationLog.map(v => ({ ...v, sessionID })),
-            ...faceViolationLog.map(v => ({ ...v, sessionID })),
-            ...audioViolationLog.map(v => ({ ...v, sessionID }))
-        ];
-        
-        saveViolations(allViolations);
-    } catch (err) {
-        console.error('Error saving exam data:', err);
-    }
-    
-    if (document.fullscreenElement) {
-        document.exitFullscreen().catch(err => {
-            console.error('Error exiting fullscreen:', err);
-        });
-    }
-    
-    questionsContainer.innerHTML = `
-        <div class="text-center p-8">
-            <h2 class="text-2xl font-bold mb-4">Exam Submitted Successfully</h2>
-            <p class="mb-4">Thank you for completing the exam.</p>
-            <p class="mb-4">Score: ${score}/${totalPossible} (MCQ only)</p>
-            <p>Your responses have been recorded.</p>
-            <button id="review-btn" class="primary-btn mt-4">Review Answers</button>
-        </div>
-    `;
-    
-    if (prevBtn) prevBtn.disabled = true;
-    if (nextBtn) nextBtn.disabled = true;
-    if (submitBtn) submitBtn.disabled = true;
-    
-    sessionStorage.setItem('examSubmitted', 'true');
-    
-    const reviewBtn = document.getElementById('review-btn');
-    if (reviewBtn) {
-        reviewBtn.addEventListener('click', showReviewPage);
-    }
-    
-    submitConfirmation.style.display = 'none';
+
+    activePopups.forEach(popup => {
+        if (document.body.contains(popup)) {
+            document.body.removeChild(popup);
+        }
+    });
+    activePopups = [];
 }
 
-function backToExam() {
-    submitConfirmation.style.display = 'none';
-}
-
-// ===== Review Page =====
-function showReviewPage() {
-    examContainer.innerHTML = `
-        <div class="max-w-3xl mx-auto p-8 mt-16">
-            <h2 class="text-3xl font-bold mb-6 text-center">Exam Report</h2>
-            <div class="mb-8">
-                ${examData.questions.map((q, i) => {
-                    const userAnswer = localStorage.getItem(`q${i}`);
-                    let answerDisplay = '';
-                    let answeredStatus = '';
-                    if (q.type === "written") {
-                        answeredStatus = userAnswer && userAnswer.trim() !== '' ? '<span class="text-green-400">Answered</span>' : '<span class="text-red-400">Not Answered</span>';
-                        answerDisplay = `<div><strong>Your Answer:</strong> ${userAnswer && userAnswer.trim() !== '' ? userAnswer : '<span class="text-red-400">Not Answered</span>'}</div>`;
-                    } else {
-                        answeredStatus = userAnswer !== null ? '<span class="text-green-400">Answered</span>' : '<span class="text-red-400">Not Answered</span>';
-                        answerDisplay = `<div><strong>Your Answer:</strong> ${userAnswer !== null ? q.options[userAnswer] : '<span class="text-red-400">Not Answered</span>'}</div>
-                        <div><strong>Correct Answer:</strong> ${q.options[q.answer]}</div>`;
-                    }
-                    return `
-                        <div class="mb-4 p-4 bg-gray-50 rounded">
-                            <div class="mb-2 font-semibold">Q${i + 1}: ${q.question}</div>
-                            <div class="mb-1">Status: ${answeredStatus}</div>
-                            ${answerDisplay}
-                        </div>
-                    `;
-                }).join('')}
-            </div>
-            <div class="mb-8">
-                <h3 class="text-xl font-bold mb-2">Exam Security Report</h3>
-                <div><strong>Warnings:</strong> ${warnings}</div>
-                <div><strong>Violations:</strong> ${violations}</div>
-                <div><strong>Face Violations:</strong> ${faceViolationLog.length}</div>
-                <div><strong>Audio Violations:</strong> ${audioViolationLog.length}</div>
-            </div>
-            <div class="text-center">
-                <button id="back-to-start" class="primary-btn">Return to Start</button>
-            </div>
-        </div>
-    `;
-
-    const backToStartBtn = document.getElementById('back-to-start');
-    if (backToStartBtn) {
-        backToStartBtn.addEventListener('click', () => {
-            location.reload();
-        });
-    }
-}
-
-// ===== Event Listeners =====
+if (submitBtn) submitBtn.addEventListener('click', () => endExam());
+if (confirmSubmitBtn) confirmSubmitBtn.addEventListener('click', () => endExam(true));
+if (backToExamBtn) backToExamBtn.addEventListener('click', () => {
+    if (submitConfirmation) submitConfirmation.style.display = 'none';
+});
+if (prevBtn) prevBtn.addEventListener('click', () => {
+    saveAnswers();
+    if (currentQuestion > 0) showQuestion(currentQuestion - 1);
+});
+if (nextBtn) nextBtn.addEventListener('click', () => {
+    saveAnswers();
+    if (currentQuestion < examData.questions.length - 1) showQuestion(currentQuestion + 1);
+});
 if (startBtn) startBtn.addEventListener('click', startExam);
-if (prevBtn) prevBtn.addEventListener('click', () => showQuestion(currentQuestion - 1));
-if (nextBtn) nextBtn.addEventListener('click', () => showQuestion(currentQuestion + 1));
-if (submitBtn) submitBtn.addEventListener('click', submitExam);
-if (confirmSubmitBtn) confirmSubmitBtn.addEventListener('click', confirmSubmit);
-if (backToExamBtn) backToExamBtn.addEventListener('click', backToExam);
 
-document.addEventListener('DOMContentLoaded', initExam);
+document.addEventListener('DOMContentLoaded', () => {
+    initExam();
+});
