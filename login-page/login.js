@@ -28,18 +28,43 @@ function handleLogin() {
     const email = document.querySelector('#email').value;
     const password = document.querySelector('#password').value;
     const rememberMe = document.querySelector('#remember-me').checked;
+    const role = document.querySelector('#roleInput').value;
     
     // Validate inputs
     if (!validateInputs(email, password)) {
         return;
     }
     
-    // Perform login
-    console.log('Attempting login with:', { email, rememberMe });
-    // Add your login logic here
-    
-    // For demonstration, redirect to dashboard
-    window.location.href = '../HR dashborad html/index.html';
+    // Perform login via API
+    fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password, role })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Store token in localStorage
+            localStorage.setItem('token', data.token);
+            
+            // Store user info if remember me is checked
+            if (rememberMe) {
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userData', JSON.stringify(data.user));
+            }
+            
+            // Redirect to the appropriate dashboard
+            window.location.href = data.redirect;
+        } else {
+            showError(data.message || 'Login failed. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Login error:', error);
+        showError('An error occurred during login. Please try again.');
+    });
 }
 
 function initializePasswordToggle() {
