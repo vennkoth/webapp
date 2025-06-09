@@ -18,12 +18,43 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve static files
-app.use(express.static(path.join(__dirname, 'login-page')));
-app.use('/hr', express.static(path.join(__dirname, 'HR-dashboard')));
-app.use('/user', express.static(path.join(__dirname, 'user-dashboard')));
-app.use('/components', express.static(path.join(__dirname, 'components')));
+// Add this new middleware for Content Security Policy
+app.use((req, res, next) => {
+    res.setHeader(
+        'Content-Security-Policy',
+        "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com"
+    );
+    next();
+});
 
+// Serve static files - Update the order and paths
+
+app.use('/components', express.static(path.join(__dirname, 'components')));
+app.use('/HR-dashboard', express.static(path.join(__dirname, 'HR-dashboard')));
+app.use('/user-dashboard', express.static(path.join(__dirname, 'user-dashboard')));
+app.use('/login-page', express.static(path.join(__dirname, 'login-page')));
+
+
+
+// API routes
+app.use('/api/auth', authRoutes);
+app.use('/api/exams', examRoutes);
+
+app.get('/', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'login-page', 'login.html'));
+});
+
+app.get('/register', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'login-page', 'register.html'));
+});
+
+app.get('/HR-dashboard', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'HR-dashboard', 'index.html'));
+});
+
+app.get('/user-dashboard', (req, res) => {
+    res.sendFile(path.resolve(__dirname, 'user-dashboard', 'index.html'));
+});
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
@@ -31,25 +62,6 @@ mongoose.connect(process.env.MONGODB_URI, {
 })
 .then(() => console.log('Connected to MongoDB Atlas'))
 .catch(err => console.error('MongoDB connection error:', err));
-
-// Main route serves the login page
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login-page', 'login.html'));
-});
-
-// HR dashboard route
-app.get('/hr', (req, res) => {
-    res.sendFile(path.join(__dirname, 'HR-dashboard', 'index.html'));
-});
-
-// User dashboard route
-app.get('/user', (req, res) => {
-    res.sendFile(path.join(__dirname, 'user-dashboard', 'user.html'));
-});
-
-// API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/exams', examRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

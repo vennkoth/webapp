@@ -92,6 +92,8 @@ function initializeRememberMe() {
         // Save preference when changed
         rememberMe.addEventListener('change', () => {
             localStorage.setItem('rememberMe', rememberMe.checked);
+
+
         });
     }
 }
