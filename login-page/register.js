@@ -1,5 +1,3 @@
-// Register Page JavaScript
-
 document.addEventListener('DOMContentLoaded', function () {
     initializeRegistrationForm();
     initializePasswordToggles();
@@ -18,16 +16,13 @@ function initializeRegistrationForm() {
 
 function handleRegistration() {
     const formData = {
-        firstName: document.querySelector('#first-name').value.trim(),
-        lastName: document.querySelector('#last-name').value.trim(),
+        fullName: document.querySelector('#full_name').value.trim(),
         email: document.querySelector('#email').value.trim(),
         password: document.querySelector('#password').value,
-        confirmPassword: document.querySelector('#confirm-password').value
+        confirmPassword: document.querySelector('#confirm_password').value
     };
 
-    if (!validateAllInputs(formData)) {
-        return;
-    }
+    if (!validateAllInputs(formData)) return;
 
     fetch('/api/auth/register', {
         method: 'POST',
@@ -35,19 +30,19 @@ function handleRegistration() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            name: `${formData.firstName} ${formData.lastName}`,
+            name: formData.fullName,
             email: formData.email,
             password: formData.password
         })
     })
-    .then(response => response.json())
+    .then(res => res.json())
     .then(data => {
-        if (data.msg || data.error) {
-            alert(data.msg || data.error);
+        if (data.error || data.msg) {
+            alert(data.error || data.msg);
         } else {
             alert('Registration successful! Redirecting to login...');
             document.querySelector('#registration-form').reset();
-            window.location.href = 'login.html';
+            window.location.href = '/login-page/login.html';
         }
     })
     .catch(error => {
@@ -63,7 +58,6 @@ function initializePasswordToggles() {
         button.addEventListener('click', function () {
             const inputId = this.dataset.for;
             const passwordInput = document.querySelector(`#${inputId}`);
-
             if (passwordInput) {
                 const type = passwordInput.getAttribute('type');
                 passwordInput.setAttribute('type', type === 'password' ? 'text' : 'password');
@@ -74,16 +68,14 @@ function initializePasswordToggles() {
 }
 
 function initializeFormValidation() {
-    const inputs = document.querySelectorAll('.form-input');
+    const inputs = document.querySelectorAll('#full_name, #email, #password, #confirm_password');
     inputs.forEach(input => {
+        input.classList.add('form-input'); // for dynamic binding
         input.addEventListener('blur', () => validateInput(input));
-
         input.addEventListener('input', () => {
             input.classList.remove('error');
             const errorElement = input.parentElement.querySelector('.error-message');
-            if (errorElement) {
-                errorElement.remove();
-            }
+            if (errorElement) errorElement.remove();
         });
     });
 }
@@ -91,17 +83,12 @@ function initializeFormValidation() {
 function validateAllInputs(formData) {
     let isValid = true;
 
-    if (!formData.firstName) {
-        showError('first-name', 'First name is required');
+    if (!formData.fullName) {
+        showError('full_name', 'Full name is required');
         isValid = false;
     }
 
-    if (!formData.lastName) {
-        showError('last-name', 'Last name is required');
-        isValid = false;
-    }
-
-    if (!formData.email || !formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
         showError('email', 'Please enter a valid email address');
         isValid = false;
     }
@@ -112,7 +99,7 @@ function validateAllInputs(formData) {
     }
 
     if (formData.password !== formData.confirmPassword) {
-        showError('confirm-password', 'Passwords do not match');
+        showError('confirm_password', 'Passwords do not match');
         isValid = false;
     }
 
@@ -121,26 +108,21 @@ function validateAllInputs(formData) {
 
 function validateInput(input) {
     const value = input.value.trim();
-
     switch (input.id) {
-        case 'first-name':
-        case 'last-name':
-            if (!value) showError(input.id, `${input.id.replace('-', ' ')} is required`);
+        case 'full_name':
+            if (!value) showError(input.id, 'Full name is required');
             break;
-
         case 'email':
-            if (!value || !value.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+            if (!value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
                 showError(input.id, 'Please enter a valid email address');
             }
             break;
-
         case 'password':
             if (!value || value.length < 6) {
                 showError(input.id, 'Password must be at least 6 characters long');
             }
             break;
-
-        case 'confirm-password':
+        case 'confirm_password':
             const password = document.querySelector('#password').value;
             if (value !== password) {
                 showError(input.id, 'Passwords do not match');
@@ -151,17 +133,15 @@ function validateInput(input) {
 
 function showError(inputId, message) {
     const input = document.querySelector(`#${inputId}`);
-    if (input) {
-        input.classList.add('error');
+    if (!input) return;
 
-        const existingError = input.parentElement.querySelector('.error-message');
-        if (existingError) {
-            existingError.remove();
-        }
+    input.classList.add('error');
 
-        const errorElement = document.createElement('div');
-        errorElement.className = 'error-message';
-        errorElement.textContent = message;
-        input.parentElement.appendChild(errorElement);
-    }
+    const existingError = input.parentElement.querySelector('.error-message');
+    if (existingError) existingError.remove();
+
+    const error = document.createElement('div');
+    error.className = 'error-message text-sm text-red-500 mt-1';
+    error.textContent = message;
+    input.parentElement.appendChild(error);
 }
