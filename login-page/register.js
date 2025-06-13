@@ -18,11 +18,12 @@ function initializeRegistrationForm() {
 
 function handleRegistration() {
     const formData = {
-        firstName: document.querySelector('#first-name').value.trim(),
-        lastName: document.querySelector('#last-name').value.trim(),
+        fullName: document.querySelector('#full_name').value.trim(),
         email: document.querySelector('#email').value.trim(),
         password: document.querySelector('#password').value,
-        confirmPassword: document.querySelector('#confirm-password').value
+        confirmPassword: document.querySelector('#confirm-password').value,
+        dob: document.querySelector('#dob').value,
+        collegeName: document.querySelector('#college_name').value.trim()
     };
 
     if (!validateAllInputs(formData)) {
@@ -35,9 +36,13 @@ function handleRegistration() {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            name: `${formData.firstName} ${formData.lastName}`,
+            username: formData.fullName.toLowerCase().replace(/\s+/g, '_'),
             email: formData.email,
-            password: formData.password
+            password: formData.password,
+            role: "student",
+            fullName: formData.fullName,
+            dob: formData.dob,
+            collegeName: formData.collegeName
         })
     })
     .then(response => response.json())

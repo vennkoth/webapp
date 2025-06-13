@@ -9,6 +9,61 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize remember me functionality
     initializeRememberMe();
+    
+    // Forgot Password Modal Logic
+    const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+    const forgotPasswordModal = document.getElementById('forgotPasswordModal');
+    const closeForgotPasswordModal = document.getElementById('closeForgotPasswordModal');
+    const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+    const forgotPasswordMessage = document.getElementById('forgotPasswordMessage');
+
+    if (forgotPasswordLink && forgotPasswordModal && closeForgotPasswordModal) {
+      forgotPasswordLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        forgotPasswordModal.classList.remove('hidden');
+      });
+      closeForgotPasswordModal.addEventListener('click', function() {
+        forgotPasswordModal.classList.add('hidden');
+        forgotPasswordMessage.textContent = '';
+      });
+      forgotPasswordModal.addEventListener('click', function(e) {
+        if (e.target === forgotPasswordModal) {
+          forgotPasswordModal.classList.add('hidden');
+          forgotPasswordMessage.textContent = '';
+        }
+      });
+    }
+    if (forgotPasswordForm) {
+      forgotPasswordForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = document.getElementById('forgotEmail').value.trim();
+        forgotPasswordMessage.textContent = '';
+        if (!email || !email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+          forgotPasswordMessage.textContent = 'Please enter a valid email address.';
+          forgotPasswordMessage.className = 'text-red-600 mt-2';
+          return;
+        }
+        fetch('/api/auth/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            forgotPasswordMessage.textContent = 'Password reset link sent! Check your email.';
+            forgotPasswordMessage.className = 'text-green-600 mt-2';
+          } else {
+            forgotPasswordMessage.textContent = data.message || 'Failed to send reset link.';
+            forgotPasswordMessage.className = 'text-red-600 mt-2';
+          }
+        })
+        .catch(() => {
+          forgotPasswordMessage.textContent = 'An error occurred. Please try again.';
+          forgotPasswordMessage.className = 'text-red-600 mt-2';
+        });
+      });
+    }
 });
 
 function initializeLoginForm() {
