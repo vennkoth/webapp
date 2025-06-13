@@ -17,48 +17,155 @@ function initializeRegistrationForm() {
 }
 
 function handleRegistration() {
-    const formData = {
-        fullName: document.querySelector('#full_name').value.trim(),
-        email: document.querySelector('#email').value.trim(),
-        password: document.querySelector('#password').value,
-        confirmPassword: document.querySelector('#confirm-password').value,
-        dob: document.querySelector('#dob').value,
-        collegeName: document.querySelector('#college_name').value.trim()
-    };
+    const form = document.querySelector('#registration-form');
+    const formData = new FormData(form);
 
     if (!validateAllInputs(formData)) {
         return;
     }
 
+    // Generate username from full name
+    const fullName = formData.get('full_name');
+    const username = fullName.toLowerCase().replace(/\s+/g, '_');
+
+    // Map form field names to match server expectations
+    const mappedFormData = new FormData();
+    mappedFormData.append('username', username);
+    mappedFormData.append('fullName', formData.get('full_name'));
+    mappedFormData.append('email', formData.get('email'));
+    mappedFormData.append('password', formData.get('password'));
+    mappedFormData.append('role', 'student');
+    mappedFormData.append('dob', formData.get('dob'));
+    mappedFormData.append('collegeName', formData.get('college_name'));
+    mappedFormData.append('course', formData.get('course'));
+    mappedFormData.append('yearOfStudy', formData.get('yearOfStudy'));
+
+    // Append the resume file if it exists
+    const resumeFile = formData.get('resume');
+    if (resumeFile) {
+        mappedFormData.append('resume', resumeFile);
+    }
+
     fetch('/api/auth/register', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            username: formData.fullName.toLowerCase().replace(/\s+/g, '_'),
-            email: formData.email,
-            password: formData.password,
-            role: "student",
-            fullName: formData.fullName,
-            dob: formData.dob,
-            collegeName: formData.collegeName
-        })
+        body: mappedFormData
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.msg || data.error) {
-            alert(data.msg || data.error);
-        } else {
-            alert('Registration successful! Redirecting to login...');
-            document.querySelector('#registration-form').reset();
-            window.location.href = 'login.html';
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(data => Promise.reject(data));
         }
+        return response.json();
+    })
+    .then(data => {
+        alert('Registration successful! Redirecting to login...');
+        form.reset();
+        window.location.href = 'login.html';
     })
     .catch(error => {
         console.error('Registration error:', error);
-        alert('Something went wrong. Please try again.');
+        alert(error.message || 'Something went wrong. Please try again.');
     });
+}
+
+// Update validation function
+function validateAllInputs(formData) {
+    let isValid = true;
+
+    // Required fields
+    const requiredFields = [
+        'full_name',
+        'email',
+        'password',
+        'confirm-password',
+        'dob',
+        'college_name',
+        'course',
+        'yearOfStudy',
+        'resume'
+    ];
+    
+    requiredFields.forEach(field => {
+        const value = field === 'confirm-password' ? 
+            document.querySelector('#confirm-password').value :
+            formData.get(field);
+
+        if (!value) {
+            showError(field, `${field.replace(/[_-]/g, ' ')} is required`);
+            isValid = false;
+        }
+    });
+
+    // Password validation
+    const password = formData.get('password');
+    const confirmPassword = document.querySelector('#confirm-password').value;
+
+    if (password && !validatePassword(password)) {
+        isValid = false;
+    }
+
+    if (password && confirmPassword && password !== confirmPassword) {
+        showError('confirm-password', 'Passwords do not match');
+        isValid = false;
+    }
+
+    // Resume validation
+    const resume = formData.get('resume');
+    if (resume && resume.size > 5 * 1024 * 1024) { // 5MB limit
+        showError('resume', 'Resume file size must be less than 5MB');
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function validatePassword(password) {
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*]/.test(password);
+
+    let isValid = true;
+
+    if (password.length < minLength) {
+        showError('password', 'Password must be at least 8 characters long');
+        isValid = false;
+    }
+
+    if (!hasUpperCase) {
+        showError('password', 'Password must contain at least one uppercase letter');
+        isValid = false;
+    }
+
+    if (!hasNumber) {
+        showError('password', 'Password must contain at least one number');
+        isValid = false;
+    }
+
+    if (!hasSpecialChar) {
+        showError('password', 'Password must contain at least one special character (!@#$%^&*)');
+        isValid = false;
+    }
+
+    return isValid;
+}
+
+function showError(fieldId, message) {
+    const field = document.getElementById(fieldId);
+    if (field) {
+        field.classList.add('border-red-500');
+        
+        // Remove existing error message if any
+        const existingError = field.parentElement.querySelector('.error-message');
+        if (existingError) {
+            existingError.remove();
+        }
+        
+        // Add new error message
+        const errorElement = document.createElement('p');
+        errorElement.className = 'error-message text-red-500 text-sm mt-1';
+        errorElement.textContent = message;
+        field.parentElement.appendChild(errorElement);
+    }
 }
 
 function initializePasswordToggles() {

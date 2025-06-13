@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const fs = require('fs');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -13,6 +14,9 @@ dotenv.config();
 
 // Create Express app
 const app = express();
+
+// serve everything in your "public" (or however you've named it) folder:
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware
 app.use(cors());
@@ -27,14 +31,16 @@ app.use((req, res, next) => {
     next();
 });
 
-// Serve static files - Update the order and paths
+// Create uploads directory if it doesn't exist
+const uploadDir = path.join(__dirname, 'uploads', 'resumes');
+fs.mkdirSync(uploadDir, { recursive: true });
 
+// Serve static files
 app.use('/components', express.static(path.join(__dirname, 'components')));
 app.use('/HR-dashboard', express.static(path.join(__dirname, 'HR-dashboard')));
 app.use('/user-dashboard', express.static(path.join(__dirname, 'user-dashboard')));
 app.use('/login-page', express.static(path.join(__dirname, 'login-page')));
-
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API routes
 app.use('/api/auth', authRoutes);
@@ -44,10 +50,11 @@ app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'login-page', 'login.html'));
 });
 
+// GET /register will return that file automatically:
 app.get('/register', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'login-page', 'register.html'));
+    res.sendFile(path.join(__dirname, 'login-page', 'register.html'));
 });
-
+  
 app.get('/HR-dashboard', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'HR-dashboard', 'index.html'));
 });
@@ -55,6 +62,7 @@ app.get('/HR-dashboard', (req, res) => {
 app.get('/user-dashboard', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'user-dashboard', 'index.html'));
 });
+
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
