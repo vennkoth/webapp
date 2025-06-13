@@ -24,23 +24,27 @@ function handleRegistration() {
         return;
     }
 
-    // Generate username from full name
+    // Generate username from full name and ensure it's included in both places
     const fullName = formData.get('full_name');
     const username = fullName.toLowerCase().replace(/\s+/g, '_');
 
-    // Map form field names to match server expectations
+    // Create a new FormData object with correctly mapped field names
     const mappedFormData = new FormData();
-    mappedFormData.append('username', username);
-    mappedFormData.append('fullName', formData.get('full_name'));
+    
+    // Core user fields
+    mappedFormData.append('username', username);  // Ensure username is set
     mappedFormData.append('email', formData.get('email'));
     mappedFormData.append('password', formData.get('password'));
     mappedFormData.append('role', 'student');
+    
+    // Profile fields
+    mappedFormData.append('fullName', fullName);
     mappedFormData.append('dob', formData.get('dob'));
     mappedFormData.append('collegeName', formData.get('college_name'));
     mappedFormData.append('course', formData.get('course'));
     mappedFormData.append('yearOfStudy', formData.get('yearOfStudy'));
 
-    // Append the resume file if it exists
+    // Resume file
     const resumeFile = formData.get('resume');
     if (resumeFile) {
         mappedFormData.append('resume', resumeFile);
@@ -57,9 +61,16 @@ function handleRegistration() {
         return response.json();
     })
     .then(data => {
-        alert('Registration successful! Redirecting to login...');
-        form.reset();
-        window.location.href = 'login.html';
+        if (data.message === 'User registered successfully') {
+            form.reset();
+            // Show success message with callback for redirection
+            window.alert('Registration successful! Please login with your credentials.');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 100);
+        } else {
+            throw new Error('Registration failed');
+        }
     })
     .catch(error => {
         console.error('Registration error:', error);

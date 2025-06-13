@@ -1,0 +1,8 @@
+nodenode_modules/
+.env
+*.log
+.vscode/
+uploads/
+.DS_Store
+Thumbs.db
+package-lock.json
