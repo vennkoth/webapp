@@ -26,13 +26,12 @@ function handleRegistration() {
 
     // Generate username from full name and ensure it's included in both places
     const fullName = formData.get('full_name');
-    const username = fullName.toLowerCase().replace(/\s+/g, '_');
+ 
 
     // Create a new FormData object with correctly mapped field names
     const mappedFormData = new FormData();
     
-    // Core user fields
-    mappedFormData.append('username', username);  // Ensure username is set
+    // Core user fields  // Ensure username is set
     mappedFormData.append('email', formData.get('email'));
     mappedFormData.append('password', formData.get('password'));
     mappedFormData.append('role', 'student');
@@ -209,37 +208,6 @@ function initializeFormValidation() {
             }
         });
     });
-}
-
-function validateAllInputs(formData) {
-    let isValid = true;
-
-    if (!formData.firstName) {
-        showError('first-name', 'First name is required');
-        isValid = false;
-    }
-
-    if (!formData.lastName) {
-        showError('last-name', 'Last name is required');
-        isValid = false;
-    }
-
-    if (!formData.email || !formData.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-        showError('email', 'Please enter a valid email address');
-        isValid = false;
-    }
-
-    if (!formData.password || formData.password.length < 6) {
-        showError('password', 'Password must be at least 6 characters long');
-        isValid = false;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-        showError('confirm-password', 'Passwords do not match');
-        isValid = false;
-    }
-
-    return isValid;
 }
 
 function validateInput(input) {

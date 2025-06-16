@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Exam = require('../models/Exam');
-const { auth, authorize } = require('../middleware/auth');
+const { auth, authorize } = require('../middleware/authMiddleware');
 
 // Create new exam (HR only)
 router.post('/', auth, authorize('hr', 'admin'), async (req, res) => {

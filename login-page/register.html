@@ -267,6 +267,33 @@
         ruleSpecial.classList.remove('valid');
       }
     });
+    // Form submission and redirect on success
+document.getElementById("registration-form").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const form = e.target;
+  const formData = new FormData(form);
+
+  try {
+    const response = await fetch("http://localhost:5000/api/auth/register", {
+      method: "POST",
+      body: formData
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      alert("User registered successfully! Redirecting to login...");
+      window.location.href = "/login-page/login.html";
+    } else {
+      alert(result.message || "Registration failed.");
+    }
+  } catch (error) {
+    console.error("Registration error:", error);
+    alert("Something went wrong. Please try again.");
+  }
+});
+
   </script>
 
 </body>
