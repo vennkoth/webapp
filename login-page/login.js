@@ -90,35 +90,35 @@ function handleLogin() {
         return;
     }
     
+    
     // Perform login via API
-    fetch('/api/login', {
+    fetch('/api/auth/login', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ email, password, role })
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Store token in localStorage
-            localStorage.setItem('token', data.token);
-            
-            // Store user info if remember me is checked
-            if (rememberMe) {
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userData', JSON.stringify(data.user));
-            }
-            
-            // Redirect to the appropriate dashboard
-            window.location.href = data.redirect;
-        } else {
-            showError(data.message || 'Login failed. Please try again.');
+    .then(async response => {
+        const data = await response.json();
+    
+        if (!response.ok) {
+            throw new Error(data.message || 'Login failed');
         }
+    
+        // Login successful
+        localStorage.setItem('token', data.token);
+    
+        if (rememberMe) {
+            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userData', JSON.stringify(data.user));
+        }
+    
+        window.location.href = data.redirect;
     })
     .catch(error => {
         console.error('Login error:', error);
-        showError('An error occurred during login. Please try again.');
+        showError(error.message || 'An error occurred during login. Please try again.');
     });
 }
 
@@ -225,3 +225,13 @@ function showError(inputId, message) {
         input.parentElement.appendChild(errorElement);
     }
 }
+
+  const togglePassword = document.getElementById("togglePassword");
+  const passwordInput = document.getElementById("password");
+
+  togglePassword.addEventListener("click", () => {
+    const type = passwordInput.type === "password" ? "text" : "password";
+    passwordInput.type = type;
+    togglePassword.textContent = type === "password" ? "👁️" : "🙈";
+  });
+

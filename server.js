@@ -1,3 +1,4 @@
+console.log("🚀 server.js is running");
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');

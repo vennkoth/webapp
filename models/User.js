@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema({
         default: 'student'
     },
     // Student-specific fields
-    fullName: String,
     dob: String,
     collegeName: String,
     course: String,
@@ -40,8 +39,7 @@ userSchema.pre('save', async function (next) {
 });
 
 // Compare password for login
-userSchema.methods.comparePassword = async function (enteredPassword) {
-    return await bcrypt.compare(enteredPassword, this.password);
+userSchema.methods.comparePassword = async function (candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
 };
-
 module.exports = mongoose.model('User', userSchema);
