@@ -34,7 +34,7 @@ function handleRegistration() {
     // Core user fields  // Ensure username is set
     mappedFormData.append('email', formData.get('email'));
     mappedFormData.append('password', formData.get('password'));
-    mappedFormData.append('role', 'student');
+    mappedFormData.append('role', 'student', 'admin');
     
     // Profile fields
     mappedFormData.append('fullName', fullName);

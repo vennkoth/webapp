@@ -94,7 +94,7 @@ router.post('/register', upload.single('resume'), async (req, res) => {
 // Login Route
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, role } = req.body;
 
         console.log(`[LOGIN ATTEMPT] Email: ${email}`);
 
@@ -103,6 +103,13 @@ router.post('/login', async (req, res) => {
             console.log('[LOGIN FAILED] No user found');
             return res.status(401).json({ message: 'Invalid credentials' });
         }
+
+        console.log('[USER ROLE IN DB]', user.role);
+        console.log('[ROLE FROM FRONTEND]', role);
+
+        if (user.role !== role) {
+            return res.status(403).json({ message: 'Access denied: role mismatch' });
+          }
         
         console.log('[USER PASSWORD]', user.password);      // hashed from DB
         console.log('[INPUT PASSWORD]', password);          // raw from frontend
@@ -123,10 +130,15 @@ router.post('/login', async (req, res) => {
 
         console.log('[LOGIN SUCCESSFUL]');
 
+        let redirect = '/user-dashboard'; // default
+        if (user.role === 'admin') redirect = '/HR-dashboard';
+
+
         res.json({
             success: true,
             message: 'Login successful',
             token,
+            redirect, // send this to frontend
             user: {
                 id: user._id,
                 email: user.email,
