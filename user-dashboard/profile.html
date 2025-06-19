@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - POSSPOLE AI MEETING ADVISOR</title>
+    <link rel="icon" href="/components/Asset 2posspole_logo_svg.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .profile-header {
+            background: linear-gradient(to right, #000000, #1a1a1a);
+            color: white;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 150px;
+            height: 150px;
+            background-color: #007bff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            margin: 0 auto 1rem;
+            border: 4px solid white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .badge {
+            background: #e2e8f0;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            color: #4a5568;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="bg-black text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="/user-dashboard/user.html" class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Back to Dashboard
+            </a>
+        </div>
+    </nav>
+
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="container mx-auto px-4 text-center">
+            <div class="profile-avatar" id="profileAvatar">U</div>
+            <h1 class="text-3xl font-bold mb-2" id="profileName">User Name</h1>
+            <p class="text-gray-300" id="userEmail">user@example.com</p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4">
+        <!-- Personal Information -->
+        <div class="profile-section">
+            <h2 class="text-xl font-semibold mb-4">Personal Information</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-gray-600 mb-1">Full Name</label>
+                    <input type="text" id="fullName" class="w-full p-2 border rounded" placeholder="Enter your full name" readonly>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Email</label>
+                    <input type="email" id="email" class="w-full p-2 border rounded" placeholder="Enter your email" readonly>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Phone</label>
+                    <input type="tel" id="phone" class="w-full p-2 border rounded" placeholder="Enter your phone number" readonly>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Location</label>
+                    <input type="text" id="location" class="w-full p-2 border rounded" placeholder="Enter your location" readonly>
+                </div>
+            </div>
+        </div>
+        <!-- Skills & Achievements -->
+        <div class="profile-section">
+            <h2 class="text-xl font-semibold mb-4">Skills & Achievements</h2>
+            <div class="mb-4">
+                <h3 class="font-semibold text-gray-600 mb-2">Skills</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="badge">Technical Skills</span>
+                    <span class="badge">Problem Solving</span>
+                    <span class="badge">Aptitude</span>
+                    <span class="badge">Communication</span>
+                </div>
+            </div>
+            <div>
+                <h3 class="font-semibold text-gray-600 mb-2">Recent Achievements</h3>
+                <ul class="list-disc list-inside text-gray-600">
+                    <li>Completed Advanced Technical Assessment with 90%</li>
+                    <li>Achieved perfect score in Problem Solving Module</li>
+                    <li>Completed 5 mock tests in last 30 days</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Save Changes and Edit Buttons -->
+        <div class="text-center mb-8">
+            <button id="editBtn" class="bg-gray-500 text-white px-8 py-3 rounded-lg hover:bg-gray-700 transition mr-4">
+                Edit
+            </button>
+            <button id="saveBtn" class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition" style="display:none;">
+                Save Changes
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Helper to set fields readonly or editable
+        function setEditable(editable) {
+            document.getElementById('fullName').readOnly = !editable;
+            document.getElementById('email').readOnly = !editable;
+            document.getElementById('phone').readOnly = !editable;
+            document.getElementById('location').readOnly = !editable;
+            document.getElementById('saveBtn').style.display = editable ? 'inline-block' : 'none';
+            document.getElementById('editBtn').style.display = editable ? 'none' : 'inline-block';
+            if (editable) {
+                document.getElementById('saveBtn').classList.add('ring', 'ring-blue-400');
+            } else {
+                document.getElementById('saveBtn').classList.remove('ring', 'ring-blue-400');
+            }
+        }
+
+        // Fetch user data from backend (MongoDB)
+        async function fetchUserProfile() {
+            try {
+                const res = await fetch('/api/user/profile', {
+                    headers: { 'Authorization': `Bearer ${localStorage.getItem('userToken')}` }
+                });
+                if (!res.ok) throw new Error('Failed to fetch user profile');
+                const user = await res.json();
+                document.getElementById('profileName').textContent = user.fullName || 'User';
+                document.getElementById('userEmail').textContent = user.email || '';
+                document.getElementById('fullName').value = user.fullName || '';
+                document.getElementById('email').value = user.email || '';
+                document.getElementById('phone').value = user.phone || '';
+                document.getElementById('location').value = user.location || '';
+                document.getElementById('profileAvatar').textContent = (user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U');
+            } catch (err) {
+                // fallback to localStorage or show error
+                const userName = localStorage.getItem('userName') || 'User';
+                const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
+                document.getElementById('profileName').textContent = userName;
+                document.getElementById('userEmail').textContent = userEmail;
+                document.getElementById('fullName').value = userName;
+                document.getElementById('email').value = userEmail;
+                document.getElementById('phone').value = localStorage.getItem('userPhone') || '';
+                document.getElementById('location').value = localStorage.getItem('userLocation') || '';
+                document.getElementById('profileAvatar').textContent = userName.charAt(0).toUpperCase();
+            }
+        }
+
+        // Save changes to backend (MongoDB)
+        async function saveChanges() {
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const location = document.getElementById('location').value;
+
+            try {
+                const res = await fetch('/api/user/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('userToken')}`
+                    },
+                    body: JSON.stringify({ fullName, email, phone, location })
+                });
+                if (!res.ok) throw new Error('Failed to save profile');
+                // Optionally update localStorage
+                localStorage.setItem('userName', fullName);
+                localStorage.setItem('userEmail', email);
+                localStorage.setItem('userPhone', phone);
+                localStorage.setItem('userLocation', location);
+                // Update display
+                document.getElementById('profileName').textContent = fullName;
+                document.getElementById('userEmail').textContent = email;
+                document.getElementById('profileAvatar').textContent = fullName.charAt(0).toUpperCase();
+                alert('Profile updated successfully!');
+                setEditable(false);
+            } catch (err) {
+                alert('Failed to update profile!');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUserProfile();
+            setEditable(false);
+
+            document.getElementById('editBtn').addEventListener('click', function() {
+                setEditable(true);
+            });
+
+            document.getElementById('saveBtn').addEventListener('click', function() {
+                saveChanges();
+            });
+        });
+    </script>
+</body>
+</html>
