@@ -18,11 +18,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const forgotPasswordMessage = document.getElementById('forgotPasswordMessage');
 
     if (forgotPasswordLink && forgotPasswordModal && closeForgotPasswordModal) {
-      forgotPasswordLink.addEventListener('click', function(e) {
+    forgotPasswordLink.addEventListener('click', function(e) {
         e.preventDefault();
         forgotPasswordModal.classList.remove('hidden');
-      });
-      closeForgotPasswordModal.addEventListener('click', function() {
+    });
+    closeForgotPasswordModal.addEventListener('click', function() {
         forgotPasswordModal.classList.add('hidden');
         forgotPasswordMessage.textContent = '';
       });
@@ -74,6 +74,25 @@ function initializeLoginForm() {
             handleLogin();
         });
     }
+    fetch(`/api/auth/profile/${data.user.id}`, {
+    method: 'GET',
+    headers: {
+        'Authorization': `Bearer ${data.token}`
+    }
+})
+.then(res => res.json())
+.then(profile => {
+    // Save the full user profile
+    localStorage.setItem('userData', JSON.stringify(profile));
+
+    // Redirect to dashboard
+    window.location.href = data.redirect;
+})
+.catch(err => {
+    console.error('[PROFILE FETCH ERROR]', err);
+    showError('Unable to load user profile');
+});
+
     
     // Initialize input validation
     initializeInputValidation();
@@ -107,14 +126,19 @@ function handleLogin() {
         }
     
         // Login successful
-        localStorage.setItem('token', data.token);
-    
-        if (rememberMe) {
-            localStorage.setItem('userEmail', email);
-            localStorage.setItem('userData', JSON.stringify(data.user));
-        }
-    
-        window.location.href = data.redirect;
+// Login successful
+localStorage.setItem('token', data.token);
+localStorage.setItem('userId', data.user.id);            // Optional but useful
+localStorage.setItem('userName', data.user.fullName);    // 🔥 Always set this
+
+if (rememberMe) {
+    localStorage.setItem('userEmail', email);
+    localStorage.setItem('userData', JSON.stringify(data.user));
+    localStorage.setItem('rememberMe', true);
+}
+
+window.location.href = data.redirect;
+
     })
     .catch(error => {
         console.error('Login error:', error);

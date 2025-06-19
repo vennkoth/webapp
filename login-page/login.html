@@ -141,6 +141,11 @@
           window.location.href = "./HR-dashboard/hr.html";
         }
 
+        // Store user data
+        localStorage.setItem('userName', data.user.name);
+        localStorage.setItem('userEmail', data.user.email);
+
+
       } catch (error) {
         console.error("Login error:", error);
         alert("An error occurred. Please try again.");

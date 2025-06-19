@@ -109,7 +109,7 @@ router.post('/login', async (req, res) => {
 
         if (user.role !== role) {
             return res.status(403).json({ message: 'Access denied: role mismatch' });
-          }
+        }
         
         console.log('[USER PASSWORD]', user.password);      // hashed from DB
         console.log('[INPUT PASSWORD]', password);          // raw from frontend
@@ -151,5 +151,19 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Error logging in', error: error.message });
     }
 });
+
+// Get User Details by ID (for Dashboard/Profile Pre-fill)
+router.get('/profile/:id', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select('-password');
+        if (!user) return res.status(404).json({ message: 'User not found' });
+
+        res.json(user);
+    } catch (error) {
+        console.error('[GET USER PROFILE ERROR]', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
 
 module.exports = router;
