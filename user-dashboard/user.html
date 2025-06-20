@@ -316,7 +316,7 @@
 
         <!-- Dashboard Content Section -->
         <div id="dashboard-content" class="content-section active">
-            <h1 class="text-2xl font-bold mb-6" id="welcome-heading">Welcome User</h1>
+            <h1 class="text-2xl font-bold mb-6" id="welcome-heading">'Welcome' </h1>
             <p class="text-gray-600 mb-8">Here's your Dashboard</p>
 
             <!-- Status Report Section -->
@@ -558,6 +558,7 @@
         // Set user greeting and avatar initial dynamically
         const userName = localStorage.getItem('userName') || 'User';
         document.getElementById('user-greeting').textContent = 'Hi, ' + userName;
+        document.getElementById('welcome-heading').textContent = 'Welcome ' + userName;
         const avatarInitial = document.querySelector('.avatar-initials');
         if (avatarInitial) avatarInitial.textContent = userName.charAt(0).toUpperCase();
     });
