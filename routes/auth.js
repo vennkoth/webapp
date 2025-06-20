@@ -164,6 +164,11 @@ router.get('/profile/:id', async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
-
+// Get all student users
+    router.get('/hr/candidates', async (req, res) => {
+        const users = await User.find({ role: 'student' });
+        res.status(200).json({ users });
+      });
+  
 
 module.exports = router;

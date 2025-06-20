@@ -146,29 +146,20 @@
 
   <!-- JavaScript -->
   <script>
-    const users = [
-      { 
-        id: "U101", 
-        name: "Aisha Nair", 
-        email: "aisha@example.com", 
-        time: "10:00 AM", 
-        resume: "resume_U101.pdf"
-      },
-      { 
-        id: "U102", 
-        name: "Ravi Sharma", 
-        email: "ravi@example.com", 
-        time: "11:00 AM", 
-        resume: "resume_U102.pdf"
-      },
-      { 
-        id: "U103", 
-        name: "Sneha Kapoor", 
-        email: "sneha@example.com", 
-        time: "2:00 PM", 
-        resume: "resume_U103.pdf"
-      }
-    ];
+let users = [];
+
+async function fetchUsers() {
+  try {
+    const res = await fetch("http://localhost:5000/api/auth/hr/candidates");
+    const data = await res.json();
+    users = data.users; // assuming response format: { users: [...] }
+    renderUsers(users);
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    alert("Failed to load candidates.");
+  }
+}
+
 
     function renderUsers(data) {
       const table = document.getElementById("userTable");
@@ -176,12 +167,13 @@
       data.forEach(user => {
         table.innerHTML += `
           <tr>
-            <td class="p-3">${user.id}</td>
-            <td class="p-3">${user.name}</td>
+            <td class="p-3">${user._id}</td>
+            <td class="p-3">${user.fullName}</td>
             <td class="p-3">${user.email}</td>
             <td class="p-3">${user.time}</td>
             <td class="p-3">
-              <a href="${user.resume}" class="download-btn" download>Download</a>
+              <a href="${user.resumeUrl || '#'}" class="download-btn" download>Download</a>
+
             </td>
           </tr>
         `;
@@ -232,7 +224,7 @@
     }
 
     window.onload = () => {
-      renderUsers(users);
+      fetchUsers();
     };
   </script>
   <script src="/user-dashboard/user-page.js"></script>
