@@ -101,14 +101,23 @@
                     <label class="block text-gray-600 mb-1">Email</label>
                     <input type="email" id="email" class="w-full p-2 border rounded" placeholder="Enter your email" readonly>
                 </div>
+                
                 <div>
-                    <label class="block text-gray-600 mb-1">Phone</label>
-                    <input type="tel" id="phone" class="w-full p-2 border rounded" placeholder="Enter your phone number" readonly>
-                </div>
-                <div>
-                    <label class="block text-gray-600 mb-1">Location</label>
-                    <input type="text" id="location" class="w-full p-2 border rounded" placeholder="Enter your location" readonly>
-                </div>
+                    <label class="block text-gray-600 mb-1">DOB</label>
+                    <input type="date" id="dob" class="w-full p-2 border rounded" placeholder="Enter your Date of Birth" readonly>
+                  </div>
+                  <div>
+                    <label class="block text-gray-600 mb-1">College Name</label>
+                    <input type="text" id="collegeName" class="w-full p-2 border rounded" placeholder="Enter your College Name" readonly>
+                  </div>
+                  <div>
+                    <label class="block text-gray-600 mb-1">Course</label>
+                    <input type="text" id="course" class="w-full p-2 border rounded" placeholder="Enter your Course" readonly>
+                  </div>
+                  <div>
+                    <label class="block text-gray-600 mb-1">Year of Study</label>
+                    <input type="text" id="yearOfStudy" class="w-full p-2 border rounded" placeholder="Enter your Year of Study" readonly>
+                  </div>
             </div>
         </div>
         <!-- Skills & Achievements -->
@@ -149,8 +158,11 @@
         function setEditable(editable) {
             document.getElementById('fullName').readOnly = !editable;
             document.getElementById('email').readOnly = !editable;
-            document.getElementById('phone').readOnly = !editable;
-            document.getElementById('location').readOnly = !editable;
+            document.getElementById('dob').readOnly = !editable;
+            document.getElementById('collegeName').readOnly = !editable;
+            document.getElementById('course').readOnly = !editable;
+            document.getElementById('yearOfStudy').readOnly = !editable;
+
             document.getElementById('saveBtn').style.display = editable ? 'inline-block' : 'none';
             document.getElementById('editBtn').style.display = editable ? 'none' : 'inline-block';
             if (editable) {
@@ -163,28 +175,36 @@
         // Fetch user data from backend (MongoDB)
         async function fetchUserProfile() {
             try {
-                const res = await fetch('/api/user/profile', {
-                    headers: { 'Authorization': `Bearer ${localStorage.getItem('userToken')}` }
-                });
+                const userId = localStorage.getItem('userId') || localStorage.getItem('userID');
+                const res = await fetch(`/api/auth/profile/${userId}`);
+
                 if (!res.ok) throw new Error('Failed to fetch user profile');
                 const user = await res.json();
                 document.getElementById('profileName').textContent = user.fullName || 'User';
                 document.getElementById('userEmail').textContent = user.email || '';
                 document.getElementById('fullName').value = user.fullName || '';
                 document.getElementById('email').value = user.email || '';
-                document.getElementById('phone').value = user.phone || '';
-                document.getElementById('location').value = user.location || '';
+                document.getElementById('dob').value = user.dob || '';
+                document.getElementById('collegeName').value = user.collegeName || '';
+                document.getElementById('course').value = user.course || '';
+                document.getElementById('yearOfStudy').value = user.yearOfStudy || '';
                 document.getElementById('profileAvatar').textContent = (user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U');
+
+                console.log('Fetched user:', user);  // 👈 Add this for debugging
+
             } catch (err) {
                 // fallback to localStorage or show error
+                console.error('Error fetching profile:', err);
                 const userName = localStorage.getItem('userName') || 'User';
                 const userEmail = localStorage.getItem('userEmail') || 'user@example.com';
                 document.getElementById('profileName').textContent = userName;
                 document.getElementById('userEmail').textContent = userEmail;
                 document.getElementById('fullName').value = userName;
                 document.getElementById('email').value = userEmail;
-                document.getElementById('phone').value = localStorage.getItem('userPhone') || '';
-                document.getElementById('location').value = localStorage.getItem('userLocation') || '';
+                document.getElementById('dob').value = localStorage.getItem('userDob') || '';
+                document.getElementById('collegeName').value = localStorage.getItem('userCollegeName') || '';
+                document.getElementById('course').value = localStorage.getItem('userCourse') || '';
+                document.getElementById('yearOfStudy').value = localStorage.getItem('userYearOfStudy') || '';
                 document.getElementById('profileAvatar').textContent = userName.charAt(0).toUpperCase();
             }
         }
@@ -193,8 +213,10 @@
         async function saveChanges() {
             const fullName = document.getElementById('fullName').value;
             const email = document.getElementById('email').value;
-            const phone = document.getElementById('phone').value;
-            const location = document.getElementById('location').value;
+            const dob = document.getElementById('dob').value;
+            const collegeName = document.getElementById('collegeName').value;
+            const course = document.getElementById('course').value;
+            const yearOfStudy = document.getElementById('yearOfStudy').value;
 
             try {
                 const res = await fetch('/api/user/profile', {
@@ -203,21 +225,31 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${localStorage.getItem('userToken')}`
                     },
-                    body: JSON.stringify({ fullName, email, phone, location })
-                });
+                    body: JSON.stringify({ fullName, email, dob, collegeName, course, yearOfStudy })
+                }); 
                 if (!res.ok) throw new Error('Failed to save profile');
+                const user = await res.json();
                 // Optionally update localStorage
-                localStorage.setItem('userName', fullName);
-                localStorage.setItem('userEmail', email);
-                localStorage.setItem('userPhone', phone);
-                localStorage.setItem('userLocation', location);
-                // Update display
-                document.getElementById('profileName').textContent = fullName;
-                document.getElementById('userEmail').textContent = email;
-                document.getElementById('profileAvatar').textContent = fullName.charAt(0).toUpperCase();
+                localStorage.setItem('userName', user.fullName);
+        localStorage.setItem('userEmail', user.email);
+        localStorage.setItem('userDob', user.dob || '');
+        localStorage.setItem('userCollegeName', user.collegeName || '');
+        localStorage.setItem('userCourse', user.course || '');
+        localStorage.setItem('userYearOfStudy', user.yearOfStudy || '');
+        // Update display
+        document.getElementById('profileName').textContent = fullName;
+        document.getElementById('userEmail').textContent = email;
+        document.getElementById('fullName').value = fullName;
+        document.getElementById('email').value = email;
+        document.getElementById('dob').value = dob;
+        document.getElementById('collegeName').value = collegeName;
+        document.getElementById('course').value = course;
+        document.getElementById('yearOfStudy').value = yearOfStudy;
+        document.getElementById('profileAvatar').textContent = fullName.charAt(0).toUpperCase();
                 alert('Profile updated successfully!');
                 setEditable(false);
             } catch (err) {
+                console.error('Error saving profile:', err);
                 alert('Failed to update profile!');
             }
         }

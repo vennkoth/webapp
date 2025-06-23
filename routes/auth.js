@@ -143,7 +143,12 @@ router.post('/login', async (req, res) => {
                 id: user._id,
                 email: user.email,
                 role: user.role,
-                fullName: user.fullName
+                fullName: user.fullName,
+                dob: user.dob,
+                collegeName: user.collegeName,
+                course: user.course,
+                yearOfStudy: user.yearOfStudy,
+                resumeUrl: user.resumeUrl
             }
         });
     } catch (error) {
@@ -164,6 +169,11 @@ router.get('/profile/:id', async (req, res) => {
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
-
+// Get all student users
+    router.get('/hr/candidates', async (req, res) => {
+        const users = await User.find({ role: 'student' });
+        res.status(200).json({ users });
+      });
+  
 
 module.exports = router;
