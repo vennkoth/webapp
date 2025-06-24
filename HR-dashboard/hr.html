@@ -126,7 +126,6 @@
               <th class="p-3">User ID</th>
               <th class="p-3">Name</th>
               <th class="p-3">Email</th>
-              <th class="p-3">Time</th>
               <th class="p-3">Resume</th>
             </tr>
           </thead>
@@ -170,7 +169,6 @@ async function fetchUsers() {
             <td class="p-3">${user._id}</td>
             <td class="p-3">${user.fullName}</td>
             <td class="p-3">${user.email}</td>
-            <td class="p-3">${user.time}</td>
             <td class="p-3">
               <a href="${user.resumeUrl || '#'}" class="download-btn" download>Download</a>
 

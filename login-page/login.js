@@ -74,7 +74,7 @@ function initializeLoginForm() {
             handleLogin();
         });
     }
-    fetch(`/api/auth/profile/${data.user.id}`, {
+    fetch(`/api/auth/profile/${data.user._id}`, {
     method: 'GET',
     headers: {
         'Authorization': `Bearer ${data.token}`
@@ -128,8 +128,9 @@ function handleLogin() {
         // Login successful
 // Login successful
 localStorage.setItem('token', data.token);
-localStorage.setItem('userId', data.user.id);            // Optional but useful
+localStorage.setItem('userId', data.user._id);            // Optional but useful
 localStorage.setItem('userName', data.user.fullName);    // 🔥 Always set this
+
 
 if (rememberMe) {
     localStorage.setItem('userEmail', email);

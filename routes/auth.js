@@ -143,7 +143,12 @@ router.post('/login', async (req, res) => {
                 id: user._id,
                 email: user.email,
                 role: user.role,
-                fullName: user.fullName
+                fullName: user.fullName,
+                dob: user.dob,
+                collegeName: user.collegeName,
+                course: user.course,
+                yearOfStudy: user.yearOfStudy,
+                resumeUrl: user.resumeUrl
             }
         });
     } catch (error) {
