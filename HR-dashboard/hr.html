@@ -94,7 +94,7 @@
   <a href="/HR-dashboard/hr.html" class="active hover:bg-gray-700 hover:text-white">Candidates</a>
   <a href="/HR-dashboard/test.html" class="hover:bg-gray-700 hover:text-white">Test</a>
   <a href="/HR-dashboard/report.html" class="hover:bg-gray-700 hover:text-white">Report</a>
-  <a href="#" class="mt-auto hover:bg-gray-700 hover:text-white">Settings</a>
+  <a href="/login-page/login.html" id="logoutBtn" class="mt-auto hover:bg-gray-700 hover:text-white">Logout</a>
 </div>
 
   <!-- Main Content -->
@@ -224,6 +224,15 @@ async function fetchUsers() {
     window.onload = () => {
       fetchUsers();
     };
+    // Add this script after your other scripts or inside <script> tags at the end of body
+  document.getElementById('logoutBtn').addEventListener('click', function (e) {
+    e.preventDefault();
+    // Clear all localStorage/sessionStorage if needed
+    localStorage.clear();
+    sessionStorage.clear();
+    // Redirect to login page
+    window.location.href = '/login-page/login.html';
+  });
   </script>
   <script src="/user-dashboard/user-page.js"></script>
 </body>
