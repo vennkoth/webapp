@@ -44,6 +44,7 @@ app.use('/login-page', express.static(path.join(__dirname, 'login-page')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API routes
+
 app.use('/api/auth', authRoutes);
 app.use('/api/exams', examRoutes);
 

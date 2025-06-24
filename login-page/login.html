@@ -133,10 +133,17 @@
           return;
         }
 // Store user data
-localStorage.setItem('userName', data.user.fullName);
+        localStorage.setItem('userId', data.user._id);
+        localStorage.setItem('userName', data.user.fullName);
+        localStorage.setItem('userCollegeName', data.user.collegeName);
+        localStorage.setItem('userCourse', data.user.course);
+        localStorage.setItem('userYearOfStudy', data.user.yearOfStudy);
         localStorage.setItem('userEmail', data.user.email);
+        localStorage.setItem('userDob', data.user.dob);
         
         alert("Login successful!");
+        console.log('User ID being saved:', data.user._id);
+
 
         if (role === "student") {
           window.location.href = "/user-dashboard/user.html";
