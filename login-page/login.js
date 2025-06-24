@@ -131,6 +131,7 @@ localStorage.setItem('token', data.token);
 localStorage.setItem('userId', data.user._id);            // Optional but useful
 localStorage.setItem('userName', data.user.fullName);    // 🔥 Always set this
 
+
 if (rememberMe) {
     localStorage.setItem('userEmail', email);
     localStorage.setItem('userData', JSON.stringify(data.user));
