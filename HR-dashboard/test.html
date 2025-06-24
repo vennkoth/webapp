@@ -341,24 +341,15 @@
         let tests = [
             // Digital Marketing
             { id: 1, name: "Digital Marketing Basics", role: "Digital Marketing", dateAdded: "2025-05-20", duration: 30, candidates: [], questions: getSampleQuestions("Digital Marketing", "Beginner") },
-            { id: 2, name: "Digital Marketing Intermediate", role: "Digital Marketing", dateAdded: "2025-05-19", duration: 45, candidates: [], questions: getSampleQuestions("Digital Marketing", "Intermediate") },
-            { id: 3, name: "Digital Marketing Advanced", role: "Digital Marketing", dateAdded: "2025-05-18", duration: 60, candidates: [], questions: getSampleQuestions("Digital Marketing", "Advanced") },
             // SDE
             { id: 4, name: "SDE Basics", role: "SDE", dateAdded: "2025-05-20", duration: 30, candidates: [], questions: getSampleQuestions("SDE", "Beginner") },
-            { id: 5, name: "SDE Intermediate", role: "SDE", dateAdded: "2025-05-19", duration: 45, candidates: [], questions: getSampleQuestions("SDE", "Intermediate") },
-            { id: 6, name: "SDE Advanced", role: "SDE", dateAdded: "2025-05-18", duration: 60, candidates: [], questions: getSampleQuestions("SDE", "Advanced") },
             // Business Analyst
             { id: 7, name: "Business Analyst Basics", role: "Business Analyst", dateAdded: "2025-05-20", duration: 30, candidates: [], questions: getSampleQuestions("Business Analyst", "Beginner") },
-            { id: 8, name: "Business Analyst Intermediate", role: "Business Analyst", dateAdded: "2025-05-19", duration: 45, candidates: [], questions: getSampleQuestions("Business Analyst", "Intermediate") },
-            { id: 9, name: "Business Analyst Advanced", role: "Business Analyst", dateAdded: "2025-05-18", duration: 60, candidates: [], questions: getSampleQuestions("Business Analyst", "Advanced") },
+ 
             // Data Analyst
             { id: 10, name: "Data Analyst Basics", role: "Data Analyst", dateAdded: "2025-05-20", duration: 30, candidates: [], questions: getSampleQuestions("Data Analyst", "Beginner") },
-            { id: 11, name: "Data Analyst Intermediate", role: "Data Analyst", dateAdded: "2025-05-19", duration: 45, candidates: [], questions: getSampleQuestions("Data Analyst", "Intermediate") },
-            { id: 12, name: "Data Analyst Advanced", role: "Data Analyst", dateAdded: "2025-05-18", duration: 60, candidates: [], questions: getSampleQuestions("Data Analyst", "Advanced") },
             // Solution Engineer
             { id: 13, name: "Solution Engineer Basics", role: "Solution Engineer", dateAdded: "2025-05-20", duration: 30, candidates: [], questions: getSampleQuestions("Solution Engineer", "Beginner") },
-            { id: 14, name: "Solution Engineer Intermediate", role: "Solution Engineer", dateAdded: "2025-05-19", duration: 45, candidates: [], questions: getSampleQuestions("Solution Engineer", "Intermediate") },
-            { id: 15, name: "Solution Engineer Advanced", role: "Solution Engineer", dateAdded: "2025-05-18", duration: 60, candidates: [], questions: getSampleQuestions("Solution Engineer", "Advanced") }
         ];
 
         // Function to generate sample questions for each role and difficulty
@@ -377,30 +368,6 @@
                         { id: 9, text: "What is a bounce rate?", options: ["Visitors leaving after one page", "Email open rate", "Ad click rate", "Social media shares"], correct: 0 },
                         { id: 10, text: "What is a target audience?", options: ["All website visitors", "Specific group for marketing", "Ad network users", "Email subscribers"], correct: 1 }
                     ],
-                    "Intermediate": [
-                        { id: 1, text: `What is the role of a meta description in ${role}?`, options: ["Improves SEO", "Increases ad spend", "Manages email lists", "Tracks conversions"], correct: 0 },
-                        { id: 2, text: "What is retargeting?", options: ["Targeting new customers", "Re-engaging past visitors", "Creating new ads", "Email marketing"], correct: 1 },
-                        { id: 3, text: `What is a funnel in ${role}?`, options: ["A sales process", "A type of ad", "A social media platform", "A website layout"], correct: 0 },
-                        { id: 4, text: "What is Google Analytics used for?", options: ["Creating ads", "Tracking website performance", "Managing social media", "Email automation"], correct: 1 },
-                        { id: 5, text: "What is a backlink?", options: ["A link to your site from another", "A social media post", "An ad campaign", "An email link"], correct: 0 },
-                        { id: 6, text: "What is CPM?", options: ["Cost Per Mille", "Clicks Per Minute", "Conversions Per Month", "Cost Per Market"], correct: 0 },
-                        { id: 7, text: "What is a heatmap?", options: ["A visual of user interactions", "A type of ad", "A social media tool", "An email template"], correct: 0 },
-                        { id: 8, text: "What is influencer marketing?", options: ["Using celebrities for ads", "Partnering with influential people", "Creating viral content", "Running email campaigns"], correct: 1 },
-                        { id: 9, text: "What is a lookalike audience?", options: ["Similar to existing customers", "New website visitors", "Ad network users", "Social media followers"], correct: 0 },
-                        { id: 10, text: "What is a drip campaign?", options: ["A type of social media post", "A series of automated emails", "A paid ad strategy", "A website redesign"], correct: 1 }
-                    ],
-                    "Advanced": [
-                        { id: 1, text: `What is schema markup in ${role}?`, options: ["Enhances SEO with structured data", "A type of ad", "A social media strategy", "An email template"], correct: 0 },
-                        { id: 2, text: "What is attribution modeling?", options: ["Assigning credit to marketing channels", "Creating ad content", "Managing social media", "Tracking email opens"], correct: 0 },
-                        { id: 3, text: "What is a canonical URL?", options: ["A preferred URL for duplicate content", "A type of ad", "A social media link", "An email link"], correct: 0 },
-                        { id: 4, text: "What is a negative keyword?", options: ["Excludes irrelevant search terms", "A type of ad", "A social media tag", "An email filter"], correct: 0 },
-                        { id: 5, text: "What is programmatic advertising?", options: ["Automated ad buying", "Manual ad creation", "Social media ads", "Email campaigns"], correct: 0 },
-                        { id: 6, text: "What is a customer journey map?", options: ["Visualizes customer interactions", "A type of ad", "A social media plan", "An email sequence"], correct: 0 },
-                        { id: 7, text: "What is a SERP feature?", options: ["Special elements in search results", "A type of ad", "A social media post", "An email campaign"], correct: 0 },
-                        { id: 8, text: "What is omnichannel marketing?", options: ["Integrated multi-channel strategy", "Single-channel ads", "Social media only", "Email only"], correct: 0 },
-                        { id: 9, text: "What is a conversion pixel?", options: ["Tracks conversions on websites", "A type of ad", "A social media tool", "An email tracker"], correct: 0 },
-                        { id: 10, text: "What is a UTM parameter?", options: ["Tracks campaign performance", "A type of ad", "A social media tag", "An email filter"], correct: 0 }
-                    ]
                 },
                 "SDE": {
                     "Beginner": [
@@ -415,30 +382,6 @@
                         { id: 9, text: "What is an IDE?", options: ["Integrated Development Environment", "Internet Data Exchange", "Internal Development Engine", "Integrated Data Environment"], correct: 0 },
                         { id: 10, text: "What is a comment?", options: ["Executable code", "Non-executable explanation", "A function", "A variable"], correct: 1 }
                     ],
-                    "Intermediate": [
-                        { id: 1, text: `What is recursion in ${role}?`, options: ["A function calling itself", "A loop", "A class", "A variable"], correct: 0 },
-                        { id: 2, text: "What is a pointer?", options: ["Stores memory address", "A data type", "A function", "A loop"], correct: 0 },
-                        { id: 3, text: "What is object-oriented programming?", options: ["Uses classes and objects", "Uses loops", "Uses arrays", "Uses functions only"], correct: 0 },
-                        { id: 4, text: "What is a hash table?", options: ["Stores key-value pairs", "A loop", "A class", "A function"], correct: 0 },
-                        { id: 5, text: "What is a binary search?", options: ["Searches sorted data", "Searches unsorted data", "Sorts data", "Stores data"], correct: 0 },
-                        { id: 6, text: "What is a linked list?", options: ["A sequence of nodes", "A function", "A class", "A variable"], correct: 0 },
-                        { id: 7, text: "What is an API?", options: ["Application Programming Interface", "Automated Program Input", "Application Process Integration", "Automated Programming Interface"], correct: 0 },
-                        { id: 8, text: "What is a stack?", options: ["LIFO data structure", "FIFO data structure", "A function", "A class"], correct: 0 },
-                        { id: 9, text: "What is a queue?", options: ["FIFO data structure", "LIFO data structure", "A function", "A class"], correct: 0 },
-                        { id: 10, text: "What is a database?", options: ["Stores organized data", "A function", "A loop", "A variable"], correct: 0 }
-                    ],
-                    "Advanced": [
-                        { id: 1, text: `What is a design pattern in ${role}?`, options: ["Reusable solution to common problems", "A data structure", "A function", "A loop"], correct: 0 },
-                        { id: 2, text: "What is multithreading?", options: ["Running multiple threads", "Running single thread", "A data structure", "A function"], correct: 0 },
-                        { id: 3, text: "What is a microservice?", options: ["Small, independent service", "A large application", "A data structure", "A function"], correct: 0 },
-                        { id: 4, text: "What is a deadlock?", options: ["Threads waiting indefinitely", "A fast thread", "A data structure", "A function"], correct: 0 },
-                        { id: 5, text: "What is a REST API?", options: ["Uses HTTP methods", "A data structure", "A loop", "A class"], correct: 0 },
-                        { id: 6, text: "What is a graph?", options: ["Nodes and edges", "A function", "A loop", "A variable"], correct: 0 },
-                        { id: 7, text: "What is a binary tree?", options: ["Tree with two children per node", "A linear list", "A function", "A class"], correct: 0 },
-                        { id: 8, text: "What is dynamic programming?", options: ["Solves problems by breaking them down", "A data structure", "A loop", "A function"], correct: 0 },
-                        { id: 9, text: "What is a mutex?", options: ["Mutual exclusion lock", "A data structure", "A function", "A loop"], correct: 0 },
-                        { id: 10, text: "What is a load balancer?", options: ["Distributes network traffic", "A data structure", "A function", "A loop"], correct: 0 }
-                    ]
                 },
                 "Business Analyst": {
                     "Beginner": [
@@ -453,30 +396,6 @@
                         { id: 9, text: "What is a BRD?", options: ["Business Requirements Document", "Business Report Data", "Business Review Document", "Business Requirement Data"], correct: 0 },
                         { id: 10, text: "What is elicitation?", options: ["Gathering requirements", "Creating reports", "Testing systems", "Modeling data"], correct: 0 }
                     ],
-                    "Intermediate": [
-                        { id: 1, text: `What is a process model in ${role}?`, options: ["Visual representation of processes", "A data table", "A report", "A test"], correct: 0 },
-                        { id: 2, text: "What is a user story?", options: ["Describes feature from user perspective", "A data model", "A test case", "A report"], correct: 0 },
-                        { id: 3, text: "What is a data flow diagram?", options: ["Shows data movement", "A report", "A test", "A database"], correct: 0 },
-                        { id: 4, text: "What is a stakeholder matrix?", options: ["Maps stakeholder influence", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 5, text: "What is a use case diagram?", options: ["Shows system interactions", "A data table", "A report", "A test"], correct: 0 },
-                        { id: 6, text: "What is a RACI chart?", options: ["Responsible, Accountable, Consulted, Informed", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 7, text: "What is a feasibility study?", options: ["Assesses project viability", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 8, text: "What is a traceability matrix?", options: ["Links requirements to deliverables", "A data table", "A report", "A test"], correct: 0 },
-                        { id: 9, text: "What is a wireframe?", options: ["UI layout sketch", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 10, text: "What is change management?", options: ["Manages project changes", "A data model", "A report", "A test"], correct: 0 }
-                    ],
-                    "Advanced": [
-                        { id: 1, text: `What is enterprise analysis in ${role}?`, options: ["Strategic business needs assessment", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 2, text: "What is a decision tree?", options: ["Visualizes decision options", "A data table", "A report", "A test"], correct: 0 },
-                        { id: 3, text: "What is a business case?", options: ["Justifies project investment", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 4, text: "What is a value stream map?", options: ["Shows process value flow", "A data table", "A report", "A test"], correct: 0 },
-                        { id: 5, text: "What is a risk register?", options: ["Tracks project risks", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 6, text: "What is a cost-benefit analysis?", options: ["Compares costs and benefits", "A data table", "A report", "A test"], correct: 0 },
-                        { id: 7, text: "What is a business rule?", options: ["Defines operational constraints", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 8, text: "What is a data dictionary?", options: ["Defines data elements", "A data table", "A report", "A test"], correct: 0 },
-                        { id: 9, text: "What is a BPMN diagram?", options: ["Business Process Model and Notation", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 10, text: "What is a stakeholder engagement plan?", options: ["Manages stakeholder interactions", "A data model", "A report", "A test"], correct: 0 }
-                    ]
                 },
                 "Data Analyst": {
                     "Beginner": [
@@ -491,30 +410,7 @@
                         { id: 9, text: "What is a bar chart?", options: ["Compares categories", "A data type", "A function", "A test"], correct: 0 },
                         { id: 10, text: "What is data visualization?", options: ["Graphical representation of data", "A data type", "A function", "A test"], correct: 0 }
                     ],
-                    "Intermediate": [
-                        { id: 1, text: `What is a regression analysis in ${role}?`, options: ["Predicts relationships", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 2, text: "What is a join in SQL?", options: ["Combines tables", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 3, text: "What is a correlation?", options: ["Measures variable relationships", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 4, text: "What is a data warehouse?", options: ["Stores large datasets", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 5, text: "What is a box plot?", options: ["Shows data distribution", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 6, text: "What is a time series?", options: ["Data over time", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 7, text: "What is a data model?", options: ["Defines data structure", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 8, text: "What is a scatter plot?", options: ["Shows data points", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 9, text: "What is a query?", options: ["Retrieves data", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 10, text: "What is data normalization?", options: ["Organizes data efficiently", "A data type", "A function", "A test"], correct: 0 }
-                    ],
-                    "Advanced": [
-                        { id: 1, text: `What is machine learning in ${role}?`, options: ["Algorithms for predictions", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 2, text: "What is a decision tree in ${role}?", options: ["Predicts outcomes", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 3, text: "What is a clustering algorithm?", options: ["Groups similar data", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 4, text: "What is a data pipeline?", options: ["Automates data flow", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 5, text: "What is a neural network?", options: ["Mimics human brain for predictions", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 6, text: "What is a confidence interval?", options: ["Range of likely values", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 7, text: "What is a hypothesis test?", options: ["Tests statistical assumptions", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 8, text: "What is a data lake?", options: ["Stores raw data", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 9, text: "What is a feature selection?", options: ["Chooses relevant variables", "A data type", "A function", "A test"], correct: 0 },
-                        { id: 10, text: "What is a Bayesian model?", options: ["Uses probability for predictions", "A data type", "A function", "A test"], correct: 0 }
-                    ]
+                    
                 },
                 "Solution Engineer": {
                     "Beginner": [
@@ -529,31 +425,7 @@
                         { id: 9, text: "What is a system integration?", options: ["Connects different systems", "A data model", "A report", "A test"], correct: 0 },
                         { id: 10, text: "What is a use case?", options: ["Describes system usage", "A data model", "A report", "A test"], correct: 0 }
                     ],
-                    "Intermediate": [
-                        { id: 1, text: `What is scalability in ${role}?`, options: ["Ability to handle growth", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 2, text: "What is a cloud solution?", options: ["Hosted on cloud infrastructure", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 3, text: "What is a technical debt?", options: ["Cost of quick fixes", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 4, text: "What is an API integration?", options: ["Connects systems via APIs", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 5, text: "What is a load test?", options: ["Tests system under load", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 6, text: "What is a deployment plan?", options: ["Outlines system rollout", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 7, text: "What is a failover mechanism?", options: ["Handles system failures", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 8, text: "What is a service level agreement?", options: ["Defines service expectations", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 9, text: "What is a system architecture diagram?", options: ["Shows system components", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 10, text: "What is a technical proposal?", options: ["Outlines solution for client", "A data model", "A report", "A test"], correct: 0 }
-                    ],
-                    "Advanced": [
-                        { id: 1, text: `What is high availability in ${role}?`, options: ["Minimizes downtime", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 2, text: "What is a distributed system?", options: ["Multiple interconnected systems", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 3, text: "What is a microservices architecture?", options: ["Small, independent services", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 4, text: "What is a disaster recovery plan?", options: ["Restores systems after failure", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 5, text: "What is a performance benchmark?", options: ["Measures system performance", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 6, text: "What is a security audit?", options: ["Evaluates system security", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 7, text: "What is a technical roadmap?", options: ["Plans technology development", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 8, text: "What is a containerization?", options: ["Packages apps with dependencies", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 9, text: "What is a load balancer?", options: ["Distributes network traffic", "A data model", "A report", "A test"], correct: 0 },
-                        { id: 10, text: "What is a DevOps pipeline?", options: ["Automates development to deployment", "A data model", "A report", "A test"], correct: 0 }
-                    ]
-                }
+                    }
             };
             return baseQuestions[role][difficulty];
         }
