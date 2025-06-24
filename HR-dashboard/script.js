@@ -520,7 +520,7 @@ async function startFaceDetection() {
         }
 
         if (message) {
-            if (now - lastFaceDetectionIssue >= 5000) {
+            if (now - lastFaceDetectionIssue >= 5001) {
                 faceViolationLog.push({
                     type: message.toUpperCase(),
                     time: new Date().toLocaleTimeString(),
