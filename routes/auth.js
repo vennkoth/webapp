@@ -5,6 +5,7 @@ const multer = require('multer');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const sendWelcomeMail = require('../sendWelcomeMail');
 
 // Multer setup
 const storage = multer.diskStorage({
@@ -67,6 +68,14 @@ router.post('/register', upload.single('resume'), async (req, res) => {
         });
 
         await user.save();
+
+        // Send welcome mail after user is saved
+        try {
+            await sendWelcomeMail(email, full_name);
+        } catch (mailErr) {
+            console.error('[SEND WELCOME MAIL ERROR]', mailErr);
+            // Optionally, you can continue even if mail fails
+        }
 
         const token = jwt.sign(
             { userId: user._id, role: user.role },

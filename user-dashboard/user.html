@@ -212,9 +212,31 @@
         .footer div:last-child {
             text-align: right;
         }
+
+        /* Loader styles */
+        #loader {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #loader div {
+            border-top-color: #000000;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
+        }
     </style>
 </head>
 <body>
+  <!-- Loader (reuse this block on every page) -->
+  <div id="loader" class="fixed inset-0 z-50 bg-white bg-opacity-80 flex items-center justify-center">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+  </div>
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-logo">
@@ -513,6 +535,13 @@
             </div>
         </div>
     </div>
+    <script>
+    // Hide loader when page is fully loaded
+    window.addEventListener('load', function() {
+      document.getElementById('loader').classList.add('hidden');
+      document.getElementById('loader').classList.remove('flex');
+    });
+    </script>
 </body>
 <script>
     // Add section switching functionality
