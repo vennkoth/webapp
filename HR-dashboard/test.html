@@ -236,30 +236,43 @@
             </div>
         </div>
 
-        <!-- Test Details Modal -->
+        <!-- Professional Test Details Modal -->
         <div id="test-details-modal" class="modal">
-            <div class="modal-content">
-                <span class="close-btn">×</span>
-                <h3 class="text-xl font-semibold mb-4 text-[#1a1a1a]">Test Details</h3>
-                <div id="test-details-content">
-                    <p class="text-[#1a1a1a]"><strong>Test Name:</strong> <span id="details-test-name"></span></p>
-                    <p class="text-[#1a1a1a]"><strong>Role:</strong> <span id="details-role"></span></p>
-                    <p class="text-[#1a1a1a]"><strong>Date Added:</strong> <span id="details-date-added"></span></p>
-                    <p class="text-[#1a1a1a]"><strong>Duration:</strong> <span id="details-duration"></span> minutes</p>
-                    <div class="mt-4">
-                        <h4 class="font-semibold text-[#1a1a1a]">Assign Candidates</h4>
-                        <div class="flex items-center mt-2">
-                            <input type="text" id="candidate-id" class="p-2 border border-[#d1d5db] rounded flex-grow text-[#1a1a1a]" placeholder="Enter Candidate ID">
-                            <button id="assign-candidate-btn" class="ml-2 bg-[#6b7280] text-[#1a1a1a] px-4 py-2 rounded-lg hover:bg-[#4b5563]">
-                                Assign
-                            </button>
+            <div class="modal-content shadow-2xl" id="draggable-modal-content"
+                 style="max-height:80vh; overflow-y:auto; cursor:move; box-shadow: 0 10px 40px rgba(0,0,0,0.2); margin: 0 auto; position: relative; left: 0; top: 60px; transform: none;">
+                <span class="close-btn hover:text-red-500 transition-colors duration-200">&times;</span>
+                <div class="flex items-center mb-4">
+                    <img src="/components/Asset 2posspole_logo_svg.png" alt="Test Icon" class="h-8 w-8 text-blue-500 mr-2" />
+                    </svg>
+                    <h3 class="text-2xl font-bold text-[#1a1a1a] cursor-move flex-1" id="modal-header">Test Details</h3>
+                </div>
+                <div id="test-details-content" class="space-y-2">
+                    <div class="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <p class="text-[#1a1a1a] font-semibold">Test Name:</p>
+                            <p class="text-[#374151]" id="details-test-name"></p>
                         </div>
-                        <ul id="assigned-candidates" class="mt-2 list-disc pl-5 text-[#1a1a1a]"></ul>
+                        <div>
+                            <p class="text-[#1a1a1a] font-semibold">Role:</p>
+                            <p class="text-[#374151]" id="details-role"></p>
+                        </div>
+                        <div>
+                            <p class="text-[#1a1a1a] font-semibold">Date Added:</p>
+                            <p class="text-[#374151]" id="details-date-added"></p>
+                        </div>
+                        <div>
+                            <p class="text-[#1a1a1a] font-semibold">Duration:</p>
+                            <p class="text-[#374151]"><span id="details-duration"></span> minutes</p>
+                        </div>
                     </div>
-                    <div class="mt-4">
-                        <div class="flex justify-between items-center">
-                            <h4 class="font-semibold text-[#1a1a1a]">Questions</h4>
-                            <button id="add-question-btn" class="bg-[#6b7280] text-[#1a1a1a] px-4 py-2 rounded-lg hover:bg-[#4b5563]">
+                    <!-- Assign Candidates section removed for professionalism -->
+                    <div class="mt-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-semibold text-[#1a1a1a] text-lg">Questions</h4>
+                            <button id="add-question-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                                <svg class="inline h-5 w-5 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                                </svg>
                                 Add Question
                             </button>
                         </div>
@@ -541,12 +554,6 @@
             document.getElementById('details-date-added').textContent = test.dateAdded;
             document.getElementById('details-duration').textContent = test.duration;
 
-            // Load assigned candidates
-            const assignedCandidatesList = document.getElementById('assigned-candidates');
-            assignedCandidatesList.innerHTML = test.candidates.length
-                ? test.candidates.map(id => `<li>${id}</li>`).join('')
-                : '<li>No candidates assigned yet.</li>';
-
             // Load questions
             const questionsList = document.getElementById('questions-list');
             questionsList.innerHTML = test.questions.length
@@ -565,19 +572,6 @@
                 : '<p class="text-[#1a1a1a]">No questions assigned yet.</p>';
 
             testDetailsModal.style.display = 'block';
-
-            // Assign Candidate Button
-            const assignCandidateBtn = document.getElementById('assign-candidate-btn');
-            assignCandidateBtn.onclick = () => {
-                const candidateId = document.getElementById('candidate-id').value.trim();
-                if (candidateId && !test.candidates.includes(candidateId)) {
-                    test.candidates.push(candidateId);
-                    assignedCandidatesList.innerHTML = test.candidates.length
-                        ? test.candidates.map(id => `<li>${id}</li>`).join('')
-                        : '<li>No candidates assigned yet.</li>';
-                    document.getElementById('candidate-id').value = '';
-                }
-            };
 
             // Add Question Button
             const addQuestionBtn = document.getElementById('add-question-btn');
@@ -719,6 +713,53 @@
 
         // Initial Load
         loadTests();
+
+        // Make the modal draggable and always open at the center-top like the screenshot
+        (function() {
+            const modal = document.getElementById('test-details-modal');
+            const modalContent = document.getElementById('draggable-modal-content');
+            const header = document.getElementById('modal-header');
+            let isDragging = false, offsetX = 0, offsetY = 0;
+
+            header.style.cursor = 'move';
+
+            header.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                const rect = modalContent.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                document.body.style.userSelect = 'none';
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    modalContent.style.position = 'fixed';
+                    modalContent.style.left = (e.clientX - offsetX) + 'px';
+                    modalContent.style.top = (e.clientY - offsetY) + 'px';
+                    modalContent.style.transform = 'none';
+                    modalContent.style.margin = '0';
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+                document.body.style.userSelect = '';
+            });
+
+            // Reset modal position to center-top when opened
+            function resetModalPosition() {
+                modalContent.style.position = 'relative';
+                modalContent.style.left = '0';
+                modalContent.style.top = '60px';
+                modalContent.style.transform = 'none';
+                modalContent.style.margin = '0 auto';
+            }
+            // Attach to modal open
+            const observer = new MutationObserver(() => {
+                if (modal.style.display === 'block') resetModalPosition();
+            });
+            observer.observe(modal, { attributes: true, attributeFilter: ['style'] });
+        })();
     </script>
 </body>
 </html>
