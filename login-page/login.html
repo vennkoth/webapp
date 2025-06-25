@@ -13,6 +13,11 @@
   </style>
 </head>
 <body class="bg-white flex justify-center items-center min-h-screen px-4">
+  <!-- Loader (centered, Tailwind-based) -->
+  <div id="loader" class="fixed inset-0 z-50 bg-white bg-opacity-80 flex items-center justify-center hidden">
+    <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+  </div>
+
   <div class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md text-center border border-gray-200">
 
     <!-- Logo -->
@@ -100,6 +105,19 @@
       roleInput.value = "admin";
     });
 
+    // Show loader
+    function showLoader() {
+      document.getElementById('loader').classList.remove('hidden');
+    }
+
+    // Hide loader
+    function hideLoader() {
+      document.getElementById('loader').classList.add('hidden');
+    }
+
+    // Hide loader on page load
+    window.addEventListener('load', hideLoader);
+
     loginForm.addEventListener("submit", async function (event) {
       event.preventDefault();
 
@@ -112,6 +130,7 @@
         return;
       }
 
+      showLoader();
       try {
         const response = await fetch("http://localhost:5001/api/auth/login", {
           method: "POST",
@@ -124,14 +143,17 @@
         const data = await response.json();
 
         if (!response.ok) {
+          hideLoader();
           alert(data.message || "Login failed.");
           return;
         }
 
         if (data.user.role !== role) {
+          hideLoader();
           alert(`This user is not registered as a ${role}.`);
           return;
         }
+
 // Store user data
         localStorage.setItem('userId', data.user._id);
         localStorage.setItem('userName', data.user.fullName);
@@ -145,12 +167,17 @@
         console.log('User ID being saved:', data.user._id);
 
 
-        if (role === "student") {
-          window.location.href = "/user-dashboard/user.html";
-        } else if (role === "admin") {
-          window.location.href = "/HR-dashboard/hr.html";
-        }
+        showLoader();
+        setTimeout(() => {
+          if (role === "student") {
+            window.location.href = "/user-dashboard/user.html";
+          } else if (role === "admin") {
+            window.location.href = "/HR-dashboard/hr.html";
+          }
+        }, 1200); // 1.2s delay for loader animation
+        return;
       } catch (error) {
+        hideLoader();
         console.error("Login error:", error);
         alert("An error occurred. Please try again.");
       }
