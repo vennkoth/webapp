@@ -59,24 +59,20 @@ router.post('/:testId/add-question', async (req, res) => {
 });
 
 // GET /api/tests/:testId/questions
-// DELETE /api/tests/:testId
-router.delete('/:testId', async (req, res) => {
+router.get('/:testId/questions', async (req, res) => {
     try {
         const testId = req.params.testId;
+        const test = await Test.findById(testId);
 
-        const deletedTest = await Test.findByIdAndDelete(testId);
-
-        if (!deletedTest) {
+        if (!test) {
             return res.status(404).json({ message: 'Test not found.' });
         }
 
-        res.json({ message: 'Test deleted successfully.' });
+        res.json({ questions: test.questions || [] });
     } catch (err) {
-        console.error('❌ Error deleting test:', err);
-        res.status(500).json({ message: 'Error deleting test', error: err.message });
+        res.status(500).json({ message: 'Error fetching questions', error: err.message });
     }
 });
-
 
 // DELETE /api/tests/:testId/questions/:questionId
 router.delete('/:testId/questions/:questionId', async (req, res) => {
@@ -107,5 +103,31 @@ router.delete('/:testId/questions/:questionId', async (req, res) => {
     }
 });
 
+// PUT /api/tests/:testId/questions/:questionId
+router.put('/:testId/questions/:questionId', async (req, res) => {
+    const { testId, questionId } = req.params;
+    const { questionText, options, correctAnswer } = req.body;
+    try {
+        const test = await Test.findById(testId);
+        if (!test) {
+            return res.status(404).json({ message: 'Test not found' });
+        }
+        // Find the question subdocument by _id
+        const question = test.questions.id(questionId);
+        if (!question) {
+            return res.status(404).json({ message: 'Question not found' });
+        }
+        // Update fields
+        question.questionText = questionText;
+        question.options = options;
+        question.correctAnswer = correctAnswer;
+
+        await test.save();
+        res.json({ message: 'Question updated!', question, test });
+    } catch (err) {
+        console.error('Error updating question:', err);
+        res.status(500).json({ message: 'Error updating question', error: err.message });
+    }
+});
 
 module.exports = router;
