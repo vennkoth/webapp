@@ -195,7 +195,7 @@
                         <tr class="border-b border-[#d1d5db]">
                             <th class="p-3 text-[#1a1a1a]">Test Name</th>
                             <th class="p-3 text-[#1a1a1a]">Role</th>
-                            <th class="p-3 text-[#1a1a1a]">Date Added</th>
+                            <!-- <th class="p-3 text-[#1a1a1a]">Date Added</th> --> <!-- Removed Date Added column -->
                             <th class="p-3 text-[#1a1a1a]">Actions</th>
                         </tr>
                     </thead>
@@ -256,10 +256,12 @@
                                 <p class="text-[#1a1a1a] font-semibold">Role:</p>
                                 <p class="text-[#374151]" id="details-role"></p>
                             </div>
+                            <!--
                             <div>
                                 <p class="text-[#1a1a1a] font-semibold">Date Added:</p>
                                 <p class="text-[#374151]" id="details-date-added"></p>
                             </div>
+                            -->
                             <div>
                                 <p class="text-[#1a1a1a] font-semibold">Duration:</p>
                                 <p class="text-[#374151]"><span id="details-duration"></span> minutes</p>
@@ -397,7 +399,7 @@
                     row.innerHTML = `
                         <td class="p-3 text-[#1a1a1a]">${test.name}</td>
                         <td class="p-3 text-[#1a1a1a]">${test.role}</td>
-                        <td class="p-3 text-[#1a1a1a]">${test.dateAdded}</td>
+                        <!-- <td class="p-3 text-[#1a1a1a]">${test.dateAdded}</td> --> <!-- Removed Date Added cell -->
                         <td class="p-3">
                             <button class="view-details-btn text-[#6b7280] hover:underline hover:text-[#4b5563] mr-2" data-id="${test.id}">View Details</button>
                             <button class="delete-test-btn text-[#4b5563] hover:underline hover:text-[#374151]" data-id="${test.id}">Delete</button>
@@ -526,7 +528,7 @@
 
                     document.getElementById('details-test-name').textContent = test.name;
                     document.getElementById('details-role').textContent = test.role;
-                    document.getElementById('details-date-added').textContent = test.dateAdded;
+                    // document.getElementById('details-date-added').textContent = test.dateAdded; // Remove this line
                     document.getElementById('details-duration').textContent = test.duration;
 
                     // Fetch questions for the test's role if needed
@@ -592,12 +594,12 @@
             });
 
             const text = await response.text();
-            let result;
-            try {
-                result = JSON.parse(text);
-            } catch (e) {
-                result = { message: 'Server returned non-JSON response.' };
-            }
+                let result;
+                try {
+                    result = JSON.parse(text);
+                } catch (e) {
+                    result = { message: 'Server returned non-JSON response.' };
+                }
 
 
             if (response.ok) {
@@ -642,29 +644,68 @@
             // Show Edit Question Modal
             function showEditQuestionModal(testId, questionId) {
                 const test = tests.find(t => t.id == testId);
-                const question = test.questions.find(q => q.id == questionId);
+                // Support both MongoDB (_id) and local (id) question keys
+                const question = test.questions.find(q => (q._id ? q._id == questionId : q.id == questionId));
                 if (!question) return;
 
-                document.getElementById('edit-question-text').value = question.text;
-                document.getElementById('edit-option-1').value = question.options[0];
-                document.getElementById('edit-option-2').value = question.options[1];
-                document.getElementById('edit-option-3').value = question.options[2];
-                document.getElementById('edit-option-4').value = question.options[3];
-                document.getElementById('edit-correct-option').value = question.correct;
+                // Fill modal fields with correct keys
+                document.getElementById('edit-question-text').value = question.questionText || question.text || '';
+                document.getElementById('edit-option-1').value = question.options?.[0] || '';
+                document.getElementById('edit-option-2').value = question.options?.[1] || '';
+                document.getElementById('edit-option-3').value = question.options?.[2] || '';
+                document.getElementById('edit-option-4').value = question.options?.[3] || '';
+                document.getElementById('edit-correct-option').value = question.correctAnswer ?? question.correct ?? 0;
 
                 editQuestionModal.style.display = 'block';
 
+                // Remove previous submit handler to avoid stacking
+                editQuestionForm.onsubmit = null;
+
                 // Handle Edit Question Form Submission
-                editQuestionForm.onsubmit = (e) => {
+                editQuestionForm.onsubmit = async (e) => {
                     e.preventDefault();
-                    question.text = document.getElementById('edit-question-text').value;
-                    question.options = [
-                        document.getElementById('edit-option-1').value,
-                        document.getElementById('edit-option-2').value,
-                        document.getElementById('edit-option-3').value,
-                        document.getElementById('edit-option-4').value
-                    ];
-                    question.correct = parseInt(document.getElementById('edit-correct-option').value);
+
+                    // Prepare updated data
+                    const updatedQuestion = {
+                        questionText: document.getElementById('edit-question-text').value,
+                        options: [
+                            document.getElementById('edit-option-1').value,
+                            document.getElementById('edit-option-2').value,
+                            document.getElementById('edit-option-3').value,
+                            document.getElementById('edit-option-4').value
+                        ],
+                        correctAnswer: parseInt(document.getElementById('edit-correct-option').value)
+                    };
+
+                    // Persist changes to backend if question has _id (MongoDB)
+                    if (question._id) {
+                        try {
+                            const response = await fetch(`/api/tests/${testId}/questions/${question._id}`, {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    ...getAuthHeaders()
+                                },
+                                body: JSON.stringify(updatedQuestion)
+                            });
+                            const result = await response.json();
+                            if (!response.ok) {
+                                alert(result.message || 'Failed to update question.');
+                                return;
+                            }
+                            // Update local question with backend response if needed
+                            Object.assign(question, result.question);
+                        } catch (err) {
+                            alert('Error updating question.');
+                            console.error(err);
+                        }
+                    } else {
+                        // For local-only (not in DB) update
+                        question.questionText = updatedQuestion.questionText;
+                        question.options = updatedQuestion.options;
+                        question.correctAnswer = updatedQuestion.correctAnswer;
+                    }
+
                     editQuestionModal.style.display = 'none';
                     editQuestionForm.reset();
                     showTestDetails(testId); // Refresh test details
