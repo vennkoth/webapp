@@ -231,7 +231,7 @@
     }
 
     setupToggle('togglePassword', 'password', 'eyeIcon');
-    setupToggle('toggleConfirmPassword', 'confirm_password', 'eyeIconConfirm');
+    setupToggle('toggleConfirmPassword', 'confirm-password', 'eyeIconConfirm');
 
     // Password validation rules
     const passwordInput = document.getElementById('password');
@@ -286,6 +286,7 @@
       const form = e.target;
       const formData = new FormData(form);
 
+
       // Show loader
       showLoader();
       try {
@@ -293,6 +294,7 @@
           method: "POST",
           body: formData
         });
+
 
         const result = await response.json();
 
