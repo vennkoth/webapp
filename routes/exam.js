@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Exam = require('../models/Exam');
+const Exam = require('../models/Test');
 const { auth, authorize } = require('../middleware/authMiddleware');
 
 // Create new exam (HR only)
@@ -122,6 +122,39 @@ router.delete('/:id', auth, authorize('hr', 'admin'), async (req, res) => {
         res.json({ message: 'Exam deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Error deleting exam', error: error.message });
+    }
+});
+
+// Create new exam (public)
+router.post('/', async (req, res) => {
+    try {
+        console.log('Received POST /api/exams with body:', req.body);
+
+        // Validate required fields
+        const { name, role, duration } = req.body;
+        if (!name || !role || !duration) {
+            console.error('Missing required fields:', { name, role, duration });
+            return res.status(400).json({ message: 'All fields (name, role, duration) are required.' });
+        }
+
+        const exam = new Exam({ name, role, duration });
+        const savedExam = await exam.save();
+
+        console.log('Exam created:', savedExam);
+        res.status(201).json({ message: 'Test created successfully!', test: savedExam });
+    } catch (err) {
+        console.error('Error creating exam:', err);
+        res.status(500).json({ message: err.message || 'Error creating exam' });
+    }
+});
+
+// GET /api/exams - return all exams
+router.get('/', async (req, res) => {
+    try {
+        const exams = await Exam.find().sort({ dateAdded: -1 });
+        res.json(exams);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching exams', error: err.message });
     }
 });
 

@@ -80,7 +80,7 @@
       <div>
         <label for="full_name" class="block mb-1 text-sm font-medium text-black">Full Name</label>
         <input type="text" name="full_name" id="full_name" required
-               class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" />
+              class="w-full px-3 py-2 border border-gray-400 rounded-lg focus:outline-none focus:border-black text-black" />
       </div>
 
       <div>
@@ -203,7 +203,6 @@
   </div>
 
   <!-- Show Password and Validation Script -->
-  <script src="/public/loader.js"></script>
   <script>
     // Password toggle button function
     function setupToggle(toggleBtnId, inputId, eyeIconId) {
@@ -272,39 +271,50 @@
         ruleSpecial.classList.remove('valid');
       }
     });
+    // Loader helpers (already present below)
+    function showLoader() {
+      document.getElementById('loader').classList.remove('hidden');
+    }
+    function hideLoader() {
+      document.getElementById('loader').classList.add('hidden');
+    }
+
     // Form submission and redirect on success
-document.getElementById("registration-form").addEventListener("submit", async function (e) {
-  e.preventDefault();
+    document.getElementById("registration-form").addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-  const form = e.target;
-  const formData = new FormData(form);
+      const form = e.target;
+      const formData = new FormData(form);
 
-  // Show loader
-  showLoader();
-  try {
-    const response = await fetch("http://localhost:5001/api/auth/register", {
-      method: "POST",
-      body: formData
+
+      // Show loader
+      showLoader();
+      try {
+        const response = await fetch("http://localhost:5000/api/auth/register", {
+          method: "POST",
+          body: formData
+        });
+
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert("User registered successfully! Redirecting to login...");
+          showLoader();
+          setTimeout(() => {
+            window.location.href = "/login-page/login.html";
+          }, 1200); // 1.2s delay for loader animation
+        } else {
+          hideLoader();
+          alert(result.message || "Registration failed.");
+        }
+      } catch (error) {
+        hideLoader();
+        console.error("Registration error:", error);
+        alert("Something went wrong. Please try again.");
+      }
     });
 
-    const result = await response.json();
-
-    if (response.ok) {
-      alert("User registered successfully! Redirecting to login...");
-      showLoader();
-      setTimeout(() => {
-        window.location.href = "/login-page/login.html";
-      }, 1200); // 1.2s delay for loader animation
-    } else {
-      hideLoader();
-      alert(result.message || "Registration failed.");
-    }
-  } catch (error) {
-    hideLoader();
-    console.error("Registration error:", error);
-    alert("Something went wrong. Please try again.");
-  }
-});
   </script>
 
 </body>

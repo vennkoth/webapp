@@ -9,6 +9,7 @@ const fs = require('fs');
 // Import routes
 const authRoutes = require('./routes/auth');
 const examRoutes = require('./routes/exam');
+const testRoutes = require('./routes/testRoutes'); // <-- Add this after other route imports
 
 // Load environment variables
 dotenv.config();
@@ -47,6 +48,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/auth', authRoutes);
 app.use('/api/exams', examRoutes);
+app.use('/api/tests', testRoutes); // <-- Add this after examRoutes
 
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'login-page', 'login.html'));
@@ -56,7 +58,7 @@ app.get('/', (req, res) => {
 app.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, 'login-page', 'register.html'));
 });
-  
+
 app.get('/HR-dashboard', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'HR-dashboard', 'index.html'));
 });
