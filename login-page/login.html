@@ -136,6 +136,7 @@
           method: "POST",
           headers: {
             "Content-Type": "application/json"
+            // No Authorization header needed for login
           },
           body: JSON.stringify({ email, password, role })
         });
@@ -154,7 +155,7 @@
           return;
         }
 
-// Store user data
+        // Store user data
         localStorage.setItem('userId', data.user._id);
         localStorage.setItem('userName', data.user.fullName);
         localStorage.setItem('userCollegeName', data.user.collegeName);
@@ -162,10 +163,14 @@
         localStorage.setItem('userYearOfStudy', data.user.yearOfStudy);
         localStorage.setItem('userEmail', data.user.email);
         localStorage.setItem('userDob', data.user.dob);
-        
+
+        // If your backend returns a token, store it for authenticated requests
+        if (data.token) {
+          localStorage.setItem('authToken', data.token);
+        }
+
         alert("Login successful!");
         console.log('User ID being saved:', data.user._id);
-
 
         showLoader();
         setTimeout(() => {
