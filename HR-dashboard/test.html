@@ -1,626 +1,630 @@
 <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>HR Test Page</title>
-        <script src="https://cdn.tailwindcss.com"></script>
-        <style>
-            .sidebar {
-                background-color: black;
-                color: white;
-                width: 240px;
-                height: 100vh;
-                position: fixed;
-                top: 0;
-                left: 0;
-                padding: 2rem 1rem;
-                display: flex;
-                flex-direction: column;
-            }
-            .sidebar a {
-                color: white;
-                padding: 0.75rem 1rem;
-                margin-bottom: 0.5rem;
-                border-radius: 0.5rem;
-                transition: background 0.3s;
-                text-decoration: none;
-            }
-            .sidebar a:hover {
-                background-color: #1e232b;
-            }
-            .sidebar a.active {
-                background-color: #374151;
-                color: white;
-            }
-            .sidebar a:hover {
-                background-color: #333333;
-            }
-            body {
-                font-family: 'Inter', sans-serif;
-                margin: 0;
-            }
-            .sidebar {
-                background-color: black;
-                color: white;
-                width: 240px;
-                height: 100vh;
-                position: fixed;
-                top: 0;
-                left: 0;
-                padding: 2rem 1rem;
-                display: flex;
-                flex-direction: column;
-            }
-            .sidebar a {
-                color: white;
-                padding: 0.75rem 1rem;
-                margin-bottom: 0.5rem;
-                border-radius: 0.5rem;
-                transition: background 0.3s;
-                text-decoration: none;
-            }
-            .sidebar a:hover {
-                background-color: #1e232b;
-            }
-            .sidebar a.active {
-                background-color: #374151;
-            }
-            .content {
-                margin-left: 250px;
-                padding: 20px;
-                background-color: #f5f5f5;
-                min-height: 100vh;
-            }
-            .modal {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.5);
-                z-index: 1000;
-            }
-            .modal-content {
-                background-color: #ffffff;
-                margin: 10% auto;
-                padding: 20px;
-                width: 80%;
-                max-width: 600px;
-                border-radius: 8px;
-                position: relative;
-            }
-            .close-btn {
-                position: absolute;
-                top: 10px;
-                right: 20px;
-                font-size: 24px;
-                cursor: pointer;
-                color: #1a1a1a;
-            }
-            .multiselect {
-                position: relative;
-            }
-            .multiselect-options {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background-color: #ffffff;
-                border: 1px solid #d1d5db;
-                border-radius: 4px;
-                max-height: 200px;
-                overflow-y: auto;
-                z-index: 10;
-            }
-            .multiselect-options label {
-                display: block;
-                padding: 8px;
-                color: #1a1a1a;
-            }
-            .multiselect-options label:hover {
-                background-color: #f5f5f5;
-            }
-            .question-item {
-                border-bottom: 1px solid #d1d5db;
-                padding: 10px 0;
-            }
-            .question-item:last-child {
-                border-bottom: none;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="sidebar flex flex-col h-full">
-            <img src="/components/posspolelogo.png" alt="Posspole Logo" class="h-6 mb-8 mx-auto">
-            <a href="/HR-dashboard/hr.html" class="hover:bg-gray-700 hover:text-white">Candidates</a>
-            <a href="/HR-dashboard/test.html" class="active hover:bg-gray-700 hover:text-white">Test</a>
-            <a href="/HR-dashboard/report.html" class="hover:bg-gray-700 hover:text-white">Report</a>
-            <a href="#" class="mt-auto hover:bg-gray-700 hover:text-white">Settings</a>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Test Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .sidebar {
+            background-color: black;
+            color: white;
+            width: 240px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar a {
+            color: white;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #1e232b;
+        }
+        .sidebar a.active {
+            background-color: #374151;
+            color: white;
+        }
+        .sidebar a:hover {
+            background-color: #333333;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+        }
+        .sidebar {
+            background-color: black;
+            color: white;
+            width: 240px;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar a {
+            color: white;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background 0.3s;
+            text-decoration: none;
+        }
+        .sidebar a:hover {
+            background-color: #1e232b;
+        }
+        .sidebar a.active {
+            background-color: #374151;
+        }
+        .content {
+            margin-left: 250px;
+            padding: 20px;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            margin: 10% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+            position: relative;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #1a1a1a;
+        }
+        .multiselect {
+            position: relative;
+        }
+        .multiselect-options {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+        .multiselect-options label {
+            display: block;
+            padding: 8px;
+            color: #1a1a1a;
+        }
+        .multiselect-options label:hover {
+            background-color: #f5f5f5;
+        }
+        .question-item {
+            word-break: break-word;
+            border-bottom: 1px solid #d1d5db;
+            padding: 10px 0;
+        }
+
+        .question-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar flex flex-col h-full">
+        <img src="/components/posspolelogo.png" alt="Posspole Logo" class="h-6 mb-8 mx-auto">
+        <a href="/HR-dashboard/hr.html" class="hover:bg-gray-700 hover:text-white">Candidates</a>
+        <a href="/HR-dashboard/test.html" class="active hover:bg-gray-700 hover:text-white">Test</a>
+        <a href="/HR-dashboard/report.html" class="hover:bg-gray-700 hover:text-white">Report</a>
+        <!-- Changed Settings to Logout -->
+        <a href="/login-page/login.html" id="logoutBtn" class="mt-auto hover:bg-gray-700 hover:text-white">Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-semibold text-[#1a1a1a]">Tests</h2>
+            <button id="add-test-btn" class="bg-[#6b7280] text-[#1a1a1a] px-4 py-2 rounded-lg hover:bg-[#4b5563]">
+                Add New Test
+            </button>
         </div>
 
-        <!-- Main Content -->
-        <div class="content">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-semibold text-[#1a1a1a]">Tests</h2>
-                <button id="add-test-btn" class="bg-[#6b7280] text-[#1a1a1a] px-4 py-2 rounded-lg hover:bg-[#4b5563]">
-                    Add New Test
+        <!-- Filters Section -->
+        <div class="bg-white p-4 rounded-lg shadow mb-6">
+            <h3 class="text-lg font-semibold mb-4 text-[#1a1a1a]">Filters</h3>
+            <div class="flex flex-wrap gap-4">
+                <!-- Date Range Filter -->
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-[#1a1a1a]">Date Range</label>
+                    <div class="flex gap-2">
+                        <input type="date" id="start-date" class="p-2 border border-[#d1d5db] rounded text-[#1a1a1a]">
+                        <span class="text-[#1a1a1a]">to</span>
+                        <input type="date" id="end-date" class="p-2 border border-[#d1d5db] rounded text-[#1a1a1a]">
+                    </div>
+                </div>
+
+                <!-- Role Filter -->
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-[#1a1a1a]">Role</label>
+                    <div class="multiselect">
+                        <div id="role-select" class="p-2 border border-[#d1d5db] rounded cursor-pointer text-[#1a1a1a]">
+                            Select Roles
+                        </div>
+                        <div id="role-options" class="multiselect-options">
+                            <label><input type="checkbox" value="Digital Marketing" class="mr-2">Digital Marketing</label>
+                            <label><input type="checkbox" value="SDE" class="mr-2">SDE</label>
+                            <label><input type="checkbox" value="Business Analyst" class="mr-2">Business Analyst</label>
+                            <label><input type="checkbox" value="Data Analyst" class="mr-2">Data Analyst</label>
+                            <label><input type="checkbox" value="Solution Engineer" class="mr-2">Solution Engineer</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Clear Filters Button -->
+                <button id="clear-filters" class="bg-[#d1d5db] text-[#1a1a1a] px-4 py-2 rounded-lg hover:bg-[#9ca3af]">
+                    Clear Filters
                 </button>
             </div>
+        </div>
 
-            <!-- Filters Section -->
-            <div class="bg-white p-4 rounded-lg shadow mb-6">
-                <h3 class="text-lg font-semibold mb-4 text-[#1a1a1a]">Filters</h3>
-                <div class="flex flex-wrap gap-4">
-                    <!-- Date Range Filter -->
-                    <div>
-                        <label class="block text-sm font-medium mb-1 text-[#1a1a1a]">Date Range</label>
-                        <div class="flex gap-2">
-                            <input type="date" id="start-date" class="p-2 border border-[#d1d5db] rounded text-[#1a1a1a]">
-                            <span class="text-[#1a1a1a]">to</span>
-                            <input type="date" id="end-date" class="p-2 border border-[#d1d5db] rounded text-[#1a1a1a]">
-                        </div>
+        <!-- Tests Table -->
+        <div class="bg-white p-4 rounded-lg shadow">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="border-b border-[#d1d5db]">
+                        <th class="p-3 text-[#1a1a1a]">Test Name</th>
+                        <th class="p-3 text-[#1a1a1a]">Role</th>
+                        <!-- <th class="p-3 text-[#1a1a1a]">Date Added</th> --> <!-- Removed Date Added column -->
+                        <th class="p-3 text-[#1a1a1a]">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="tests-table-body">
+                    <!-- Tests will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Add Test Modal -->
+        <div id="add-test-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">×</span>
+                <h3 class="text-xl font-semibold mb-4 text-[#1a1a1a]">Add New Test</h3>
+                <form id="add-test-form">
+                    <div class="mb-4">
+                        <label for="test-name" class="block text-sm font-medium text-[#1a1a1a]">Test Name</label>
+                        <input type="text" id="test-name" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required>
                     </div>
-
-                    <!-- Role Filter -->
-                    <div>
-                        <label class="block text-sm font-medium mb-1 text-[#1a1a1a]">Role</label>
-                        <div class="multiselect">
-                            <div id="role-select" class="p-2 border border-[#d1d5db] rounded cursor-pointer text-[#1a1a1a]">
-                                Select Roles
-                            </div>
-                            <div id="role-options" class="multiselect-options">
-                                <label><input type="checkbox" value="Digital Marketing" class="mr-2">Digital Marketing</label>
-                                <label><input type="checkbox" value="SDE" class="mr-2">SDE</label>
-                                <label><input type="checkbox" value="Business Analyst" class="mr-2">Business Analyst</label>
-                                <label><input type="checkbox" value="Data Analyst" class="mr-2">Data Analyst</label>
-                                <label><input type="checkbox" value="Solution Engineer" class="mr-2">Solution Engineer</label>
-                            </div>
-                        </div>
+                    <div class="mb-4">
+                        <label for="test-role" class="block text-sm font-medium text-[#1a1a1a]">Role</label>
+                        <select id="test-role" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required>
+                            <option value="Digital Marketing">Digital Marketing</option>
+                            <option value="SDE">SDE</option>
+                            <option value="Business Analyst">Business Analyst</option>
+                            <option value="Data Analyst">Data Analyst</option>
+                            <option value="Solution Engineer">Solution Engineer</option>
+                        </select>
                     </div>
-
-                    <!-- Clear Filters Button -->
-                    <button id="clear-filters" class="bg-[#d1d5db] text-[#1a1a1a] px-4 py-2 rounded-lg hover:bg-[#9ca3af]">
-                        Clear Filters
+                    <div class="mb-4">
+                        <label for="test-duration" class="block text-sm font-medium text-[#1a1a1a]">Duration (minutes)</label>
+                        <input type="number" id="test-duration" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required>
+                    </div>
+                    <button type="submit" class="bg-[#6b7280] text-[#1a1a1a] px-4 py-2 rounded-lg hover:bg-[#4b5563]">
+                        Add Test
                     </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Professional Test Details Modal -->
+        <div id="test-details-modal" class="modal">
+            <div class="modal-content shadow-2xl w-[90%] max-w-[1000px] max-h-[90vh] overflow-y-auto break-words" id="draggable-modal-content"
+                style="max-height:80vh; overflow-y:auto; cursor:move; box-shadow: 0 10px 40px rgba(0,0,0,0.2); margin: 0 auto; position: relative; left: 0; top: 60px; transform: none;">
+                <span class="close-btn hover:text-red-500 transition-colors duration-200">&times;</span>
+                <div class="flex items-center mb-4">
+                    <img src="/components/Asset 2posspole_logo_svg.png" alt="Test Icon" class="h-8 w-8 text-blue-500 mr-2" />
+                    </svg>
+                    <h3 class="text-2xl font-bold text-[#1a1a1a] cursor-move flex-1" id="modal-header">Test Details</h3>
                 </div>
-            </div>
-
-            <!-- Tests Table -->
-            <div class="bg-white p-4 rounded-lg shadow">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr class="border-b border-[#d1d5db]">
-                            <th class="p-3 text-[#1a1a1a]">Test Name</th>
-                            <th class="p-3 text-[#1a1a1a]">Role</th>
-                            <!-- <th class="p-3 text-[#1a1a1a]">Date Added</th> --> <!-- Removed Date Added column -->
-                            <th class="p-3 text-[#1a1a1a]">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tests-table-body">
-                        <!-- Tests will be dynamically added here -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Add Test Modal -->
-            <div id="add-test-modal" class="modal">
-                <div class="modal-content">
-                    <span class="close-btn">×</span>
-                    <h3 class="text-xl font-semibold mb-4 text-[#1a1a1a]">Add New Test</h3>
-                    <form id="add-test-form">
-                        <div class="mb-4">
-                            <label for="test-name" class="block text-sm font-medium text-[#1a1a1a]">Test Name</label>
-                            <input type="text" id="test-name" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required>
+                <div id="test-details-content" class="space-y-2">
+                    <div class="grid grid-cols-2 gap-4 mb-2">
+                        <div>
+                            <p class="text-[#1a1a1a] font-semibold">Test Name:</p>
+                            <p class="text-[#374151]" id="details-test-name"></p>
                         </div>
-                        <div class="mb-4">
-                            <label for="test-role" class="block text-sm font-medium text-[#1a1a1a]">Role</label>
-                            <select id="test-role" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required>
-                                <option value="Digital Marketing">Digital Marketing</option>
-                                <option value="SDE">SDE</option>
-                                <option value="Business Analyst">Business Analyst</option>
-                                <option value="Data Analyst">Data Analyst</option>
-                                <option value="Solution Engineer">Solution Engineer</option>
-                            </select>
+                        <div>
+                            <p class="text-[#1a1a1a] font-semibold">Role:</p>
+                            <p class="text-[#374151]" id="details-role"></p>
                         </div>
-                        <div class="mb-4">
-                            <label for="test-duration" class="block text-sm font-medium text-[#1a1a1a]">Duration (minutes)</label>
-                            <input type="number" id="test-duration" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required>
+                        <!--
+                        <div>
+                            <p class="text-[#1a1a1a] font-semibold">Date Added:</p>
+                            <p class="text-[#374151]" id="details-date-added"></p>
                         </div>
-                        <button type="submit" class="bg-[#6b7280] text-[#1a1a1a] px-4 py-2 rounded-lg hover:bg-[#4b5563]">
-                            Add Test
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Professional Test Details Modal -->
-            <div id="test-details-modal" class="modal">
-                <div class="modal-content shadow-2xl" id="draggable-modal-content"
-                    style="max-height:80vh; overflow-y:auto; cursor:move; box-shadow: 0 10px 40px rgba(0,0,0,0.2); margin: 0 auto; position: relative; left: 0; top: 60px; transform: none;">
-                    <span class="close-btn hover:text-red-500 transition-colors duration-200">&times;</span>
-                    <div class="flex items-center mb-4">
-                        <img src="/components/Asset 2posspole_logo_svg.png" alt="Test Icon" class="h-8 w-8 text-blue-500 mr-2" />
-                        </svg>
-                        <h3 class="text-2xl font-bold text-[#1a1a1a] cursor-move flex-1" id="modal-header">Test Details</h3>
-                    </div>
-                    <div id="test-details-content" class="space-y-2">
-                        <div class="grid grid-cols-2 gap-4 mb-2">
-                            <div>
-                                <p class="text-[#1a1a1a] font-semibold">Test Name:</p>
-                                <p class="text-[#374151]" id="details-test-name"></p>
-                            </div>
-                            <div>
-                                <p class="text-[#1a1a1a] font-semibold">Role:</p>
-                                <p class="text-[#374151]" id="details-role"></p>
-                            </div>
-                            <!--
-                            <div>
-                                <p class="text-[#1a1a1a] font-semibold">Date Added:</p>
-                                <p class="text-[#374151]" id="details-date-added"></p>
-                            </div>
-                            -->
-                            <div>
-                                <p class="text-[#1a1a1a] font-semibold">Duration:</p>
-                                <p class="text-[#374151]"><span id="details-duration"></span> minutes</p>
-                            </div>
-                        </div>
-                        <!-- Assign Candidates section removed for professionalism -->
-                        <div class="mt-6">
-                            <div class="flex justify-between items-center mb-2">
-                                <h4 class="font-semibold text-[#1a1a1a] text-lg">Questions</h4>
-                                <button id="add-question-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-                                    <svg class="inline h-5 w-5 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-                                    </svg>
-                                    Add Question
-                                </button>
-                            </div>
-                            <div id="questions-list" class="mt-2"></div>
+                        -->
+                        <div>
+                            <p class="text-[#1a1a1a] font-semibold">Duration:</p>
+                            <p class="text-[#374151]"><span id="details-duration"></span> minutes</p>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- Edit Question Modal -->
-            <div id="edit-question-modal" class="modal">
-                <div class="modal-content">
-                    <span class="close-btn">×</span>
-                    <h3 class="text-xl font-semibold mb-4 text-[#1a1a1a]">Edit Question</h3>
-                    <form id="edit-question-form">
-                        <div class="mb-4">
-                            <label for="edit-question-text" class="block text-sm font-medium text-[#1a1a1a]">Question</label>
-                            <textarea id="edit-question-text" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required></textarea>
+                    <!-- Assign Candidates section removed for professionalism -->
+                    <div class="mt-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-semibold text-[#1a1a1a] text-lg">Questions</h4>
+                            <button id="add-question-btn" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
+                                <svg class="inline h-5 w-5 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                Add Question
+                            </button>
                         </div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-[#1a1a1a]">Options</label>
-                            <input type="text" id="edit-option-1" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
-                            <input type="text" id="edit-option-2" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
-                            <input type="text" id="edit-option-3" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
-                            <input type="text" id="edit-option-4" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
-                        </div>
-                        <div class="mb-4">
-                            <label for="edit-correct-option" class="block text-sm font-medium text-[#1a1a1a]">Correct Option</label>
-                            <select id="edit-correct-option" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required>
-                                <option value="0">Option 1</option>
-                                <option value="1">Option 2</option>
-                                <option value="2">Option 3</option>
-                                <option value="3">Option 4</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="bg-[#6b7280] text-[#1a1a1a] px-4 py-2 rounded-lg hover:bg-[#4b5563]">
-                            Save Question
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Add Question Modal -->
-            <div id="add-question-modal" class="modal">
-                <div class="modal-content">
-                    <span class="close-btn">×</span>
-                    <h3 class="text-xl font-semibold mb-4 text-[#1a1a1a]">Add New Question</h3>
-                    <form id="add-question-form">
-                        <div class="mb-4">
-                            <label for="add-question-text" class="block text-sm font-medium text-[#1a1a1a]">Question</label>
-                            <textarea id="add-question-text" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required></textarea>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium text-[#1a1a1a]">Options</label>
-                            <input type="text" id="add-option-1" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
-                            <input type="text" id="add-option-2" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
-                            <input type="text" id="add-option-3" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
-                            <input type="text" id="add-option-4" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
-                        </div>
-                        <div class="mb-4">
-                            <label for="add-correct-option" class="block text-sm font-medium text-[#1a1a1a]">Correct Option</label>
-                            <select id="add-correct-option" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required>
-                                <option value="0">Option 1</option>
-                                <option value="1">Option 2</option>
-                                <option value="2">Option 3</option>
-                                <option value="3">Option 4</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="bg-[#6b7280] text-[#1a1a1a] px-4 py-2 rounded-lg hover:bg-[#4b5563]">
-                            Add Question
-                        </button>
-                    </form>
+                        <div id="questions-list" class="mt-2"></div>
+                    </div>
                 </div>
             </div>
         </div>
 
+        <!-- Edit Question Modal -->
+        <div id="edit-question-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">×</span>
+                <h3 class="text-xl font-semibold mb-4 text-[#1a1a1a]">Edit Question</h3>
+                <form id="edit-question-form">
+                    <div class="mb-4">
+                        <label for="edit-question-text" class="block text-sm font-medium text-[#1a1a1a]">Question</label>
+                        <textarea id="edit-question-text" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-[#1a1a1a]">Options</label>
+                        <input type="text" id="edit-option-1" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
+                        <input type="text" id="edit-option-2" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
+                        <input type="text" id="edit-option-3" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
+                        <input type="text" id="edit-option-4" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="edit-correct-option" class="block text-sm font-medium text-[#1a1a1a]">Correct Option</label>
+                        <select id="edit-correct-option" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required>
+                            <option value="0">Option 1</option>
+                            <option value="1">Option 2</option>
+                            <option value="2">Option 3</option>
+                            <option value="3">Option 4</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="bg-[#6b7280] text-[#1a1a1a] px-4 py-2 rounded-lg hover:bg-[#4b5563]">
+                        Save Question
+                    </button>
+                </form>
+            </div>
+        </div>
 
-        <script>
-            // Remove all hardcoded test data
-            let tests = [];
+        <!-- Add Question Modal -->
+        <div id="add-question-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-btn">×</span>
+                <h3 class="text-xl font-semibold mb-4 text-[#1a1a1a]">Add New Question</h3>
+                <form id="add-question-form">
+                    <div class="mb-4">
+                        <label for="add-question-text" class="block text-sm font-medium text-[#1a1a1a]">Question</label>
+                        <textarea id="add-question-text" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-[#1a1a1a]">Options</label>
+                        <input type="text" id="add-option-1" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
+                        <input type="text" id="add-option-2" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
+                        <input type="text" id="add-option-3" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
+                        <input type="text" id="add-option-4" class="w-full p-2 border border-[#d1d5db] rounded mb-2 text-[#1a1a1a]" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="add-correct-option" class="block text-sm font-medium text-[#1a1a1a]">Correct Option</label>
+                        <select id="add-correct-option" class="w-full p-2 border border-[#d1d5db] rounded text-[#1a1a1a]" required>
+                            <option value="0">Option 1</option>
+                            <option value="1">Option 2</option>
+                            <option value="2">Option 3</option>
+                            <option value="3">Option 4</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="bg-[#6b7280] text-[#1a1a1a] px-4 py-2 rounded-lg hover:bg-[#4b5563]">
+                        Add Question
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 
-            // Filter state
-            let filters = {
-                startDate: null,
-                endDate: null,
-                roles: []
 
-   
-            };
+    <script>
+        // Remove all hardcoded test data
+        let tests = [];
 
-            // Load tests into the table based on filters
-            function loadTests() {
-                const tableBody = document.getElementById('tests-table-body');
-                tableBody.innerHTML = '';
+        // Filter state
+        let filters = {
+            startDate: null,
+            endDate: null,
+            roles: []
 
-                const filteredTests = tests.filter(test => {
-                    // Date filter
-                    let passesDateFilter = true;
-                    const testDate = new Date(test.dateAdded);
-                    if (filters.startDate) {
-                        const startDate = new Date(filters.startDate);
-                        passesDateFilter = passesDateFilter && testDate >= startDate;
-                    }
-                    if (filters.endDate) {
-                        const endDate = new Date(filters.endDate);
-                        passesDateFilter = passesDateFilter && testDate <= endDate;
-                    }
 
-                    // Role filter
-                    let passesRoleFilter = true;
-                    if (filters.roles.length > 0) {
-                        passesRoleFilter = filters.roles.includes(test.role);
-                    }
+        };
 
-                    // Combine filters (all must pass)
-                    return passesDateFilter && passesRoleFilter;
-                });
+        // Load tests into the table based on filters
+        function loadTests() {
+            const tableBody = document.getElementById('tests-table-body');
+            tableBody.innerHTML = '';
 
-                filteredTests.forEach(test => {
-                    const row = document.createElement('tr');
-                    row.className = 'border-b border-[#d1d5db]';
-                    row.innerHTML = `
-                        <td class="p-3 text-[#1a1a1a]">${test.name}</td>
-                        <td class="p-3 text-[#1a1a1a]">${test.role}</td>
-                        <!-- <td class="p-3 text-[#1a1a1a]">${test.dateAdded}</td> --> <!-- Removed Date Added cell -->
-                        <td class="p-3">
-                            <button class="view-details-btn text-[#6b7280] hover:underline hover:text-[#4b5563] mr-2" data-id="${test.id}">View Details</button>
-                            <button class="delete-test-btn text-[#4b5563] hover:underline hover:text-[#374151]" data-id="${test.id}">Delete</button>
-                        </td>
-                    `;
-                    tableBody.appendChild(row);
-                });
+            const filteredTests = tests.filter(test => {
+                // Date filter
+                let passesDateFilter = true;
+                const testDate = new Date(test.dateAdded);
+                if (filters.startDate) {
+                    const startDate = new Date(filters.startDate);
+                    passesDateFilter = passesDateFilter && testDate >= startDate;
+                }
+                if (filters.endDate) {
+                    const endDate = new Date(filters.endDate);
+                    passesDateFilter = passesDateFilter && testDate <= endDate;
+                }
 
-                // Add event listeners for view details and delete buttons
-                document.querySelectorAll('.view-details-btn').forEach(btn => {
-                    btn.addEventListener('click', () => showTestDetails(btn.dataset.id));
-                });
-                document.querySelectorAll('.delete-test-btn').forEach(btn => {
-                    btn.addEventListener('click', () => deleteTest(btn.dataset.id));
-                });
-            }
+                // Role filter
+                let passesRoleFilter = true;
+                if (filters.roles.length > 0) {
+                    passesRoleFilter = filters.roles.includes(test.role);
+                }
 
-            // Show Add Test Modal
-            const addTestBtn = document.getElementById('add-test-btn');
-            const addTestModal = document.getElementById('add-test-modal');
-            const addTestForm = document.getElementById('add-test-form');
-
-            addTestBtn.addEventListener('click', () => {
-                addTestModal.style.display = 'block';
-                // Reset form fields and enable them for editing
-                addTestForm.reset();
-                Array.from(addTestForm.elements).forEach(el => {
-                    el.disabled = false;
-                });
+                // Combine filters (all must pass)
+                return passesDateFilter && passesRoleFilter;
             });
 
-            // Close Modals
-            document.querySelectorAll('.close-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    btn.closest('.modal').style.display = 'none';
-                });
+            filteredTests.forEach(test => {
+                const row = document.createElement('tr');
+                row.className = 'border-b border-[#d1d5db]';
+                row.innerHTML = `
+                    <td class="p-3 text-[#1a1a1a]">${test.name}</td>
+                    <td class="p-3 text-[#1a1a1a]">${test.role}</td>
+                    <!-- <td class="p-3 text-[#1a1a1a]">${test.dateAdded}</td> --> <!-- Removed Date Added cell -->
+                    <td class="p-3">
+                        <button class="view-details-btn text-[#6b7280] hover:underline hover:text-[#4b5563] mr-2" data-id="${test.id}">View Details</button>
+                        <button class="delete-test-btn text-[#4b5563] hover:underline hover:text-[#374151]" data-id="${test.id}">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
             });
 
-            // Helper to get auth token from localStorage
-            function getAuthHeaders() {
-                const token = localStorage.getItem('authToken');
-                return token ? { 'Authorization': 'Bearer ' + token } : {};
-            }
+            // Add event listeners for view details and delete buttons
+            document.querySelectorAll('.view-details-btn').forEach(btn => {
+                btn.addEventListener('click', () => showTestDetails(btn.dataset.id));
+            });
+            document.querySelectorAll('.delete-test-btn').forEach(btn => {
+                btn.addEventListener('click', () => deleteTest(btn.dataset.id));
+            });
+        }
 
-            // Fetch all tests from backend and update dashboard
-            async function fetchTestsFromBackend() {
+        // Show Add Test Modal
+        const addTestBtn = document.getElementById('add-test-btn');
+        const addTestModal = document.getElementById('add-test-modal');
+        const addTestForm = document.getElementById('add-test-form');
+
+        addTestBtn.addEventListener('click', () => {
+            addTestModal.style.display = 'block';
+            // Reset form fields and enable them for editing
+            addTestForm.reset();
+            Array.from(addTestForm.elements).forEach(el => {
+                el.disabled = false;
+            });
+        });
+
+        // Close Modals
+        document.querySelectorAll('.close-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.closest('.modal').style.display = 'none';
+            });
+        });
+
+        // Helper to get auth token from localStorage
+        function getAuthHeaders() {
+            const token = localStorage.getItem('authToken');
+            return token ? { 'Authorization': 'Bearer ' + token } : {};
+        }
+
+        // Fetch all tests from backend and update dashboard
+        async function fetchTestsFromBackend() {
+            try {
+                const response = await fetch('/api/exams', {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...getAuthHeaders()
+                    }
+                });
+                if (response.status === 404) {
+                    console.error('Backend route /api/exams not found (404). Make sure your Express route exists and server is running.');
+                    alert('Error: Backend route /api/exams not found. Please check your server.');
+                    return;
+                }
+                if (!response.ok) throw new Error('Failed to fetch tests');
+                const testsFromDb = await response.json();
+                // Map backend tests to local format if needed
+                tests = testsFromDb.map(test => ({
+                    id: test._id,
+                    name: test.name,
+                    role: test.role,
+                    duration: test.duration,
+                    dateAdded: test.dateAdded ? test.dateAdded.split('T')[0] : '', // Format date
+                    questions: test.questions || [],
+                    candidates: test.candidates || []
+                }));
+                loadTests();
+            } catch (err) {
+                console.error('Error fetching tests:', err);
+                alert('Could not load tests. Please check your server and backend routes.');
+            }
+        }
+
+        // Add Test Form Submission
+        addTestForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const testName = document.getElementById('test-name').value;
+                const testRole = document.getElementById('test-role').value;
+                const testDuration = document.getElementById('test-duration').value;
+
+                const payload = {
+                    name: testName,
+                    role: testRole,
+                    duration: parseInt(testDuration)
+                };
+
                 try {
                     const response = await fetch('/api/exams', {
+                        method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             ...getAuthHeaders()
-                        }
+                        },
+                        body: JSON.stringify(payload)
                     });
-                    if (response.status === 404) {
-                        console.error('Backend route /api/exams not found (404). Make sure your Express route exists and server is running.');
-                        alert('Error: Backend route /api/exams not found. Please check your server.');
-                        return;
+                    const result = await response.json();
+                    if (response.ok) {
+                        alert(result.message || 'Test created successfully!');
+                        addTestModal.style.display = 'none';
+                        addTestForm.reset();
+                        await fetchTestsFromBackend(); // Refresh dashboard with new test
+                    } else {
+                        alert(result.message || 'Failed to create test.');
+                        console.error('Backend error:', result);
                     }
-                    if (!response.ok) throw new Error('Failed to fetch tests');
-                    const testsFromDb = await response.json();
-                    // Map backend tests to local format if needed
-                    tests = testsFromDb.map(test => ({
-                        id: test._id,
-                        name: test.name,
-                        role: test.role,
-                        duration: test.duration,
-                        dateAdded: test.dateAdded ? test.dateAdded.split('T')[0] : '', // Format date
-                        questions: test.questions || [],
-                        candidates: test.candidates || []
-                    }));
-                    loadTests();
                 } catch (err) {
-                    console.error('Error fetching tests:', err);
-                    alert('Could not load tests. Please check your server and backend routes.');
+                    alert('Error creating test.');
+                    console.error(err);
                 }
-            }
-
-            // Add Test Form Submission
-            addTestForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const testName = document.getElementById('test-name').value;
-                    const testRole = document.getElementById('test-role').value;
-                    const testDuration = document.getElementById('test-duration').value;
-
-                    const payload = {
-                        name: testName,
-                        role: testRole,
-                        duration: parseInt(testDuration)
-                    };
-
-                    try {
-                        const response = await fetch('/api/exams', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                ...getAuthHeaders()
-                            },
-                            body: JSON.stringify(payload)
-                        });
-                        const result = await response.json();
-                        if (response.ok) {
-                            alert(result.message || 'Test created successfully!');
-                            addTestModal.style.display = 'none';
-                            addTestForm.reset();
-                            await fetchTestsFromBackend(); // Refresh dashboard with new test
-                        } else {
-                            alert(result.message || 'Failed to create test.');
-                            console.error('Backend error:', result);
-                        }
-                    } catch (err) {
-                        alert('Error creating test.');
-                        console.error(err);
-                    }
-                });
-
-                // Show Test Details Modal
-                const testDetailsModal = document.getElementById('test-details-modal');
-                const editQuestionModal = document.getElementById('edit-question-modal');
-                const editQuestionForm = document.getElementById('edit-question-form');
-                const addQuestionModal = document.getElementById('add-question-modal');
-                const addQuestionForm = document.getElementById('add-question-form');
-
-                async function showTestDetails(testId) {
-                    const test = tests.find(t => t.id == testId);
-                    if (!test) return;
-
-                    document.getElementById('details-test-name').textContent = test.name;
-                    document.getElementById('details-role').textContent = test.role;
-                    // document.getElementById('details-date-added').textContent = test.dateAdded; // Remove this line
-                    document.getElementById('details-duration').textContent = test.duration;
-
-                    // Fetch questions for the test's role if needed
-                    let questions = test.questions;
-                    if (!questions || questions.length === 0) {
-                        questions = await fetchQuestionsForRole(test.role);
-                        test.questions = questions;
-                    }
-
-                    // Render questions
-                    const questionsList = document.getElementById('questions-list');
-                    questionsList.innerHTML = questions.length
-                        ? questions.map((q, index) => `
-                            <div class="question-item">
-                                <p class="text-[#1a1a1a]"><strong>Question ${index + 1}:</strong> ${q.text}</p>
-                                <ol class="list-decimal pl-5 text-[#1a1a1a]">
-                                    ${q.options.map((opt, i) => `<li${i === q.correct ? ' class="font-bold"' : ''}>${opt}</li>`).join('')}
-                                </ol>
-                                <div class="mt-2">
-                                    <button class="edit-question-btn text-[#6b7280] hover:underline hover:text-[#4b5563] mr-2" data-test-id="${test.id}" data-question-id="${q._id || q.id}">Edit</button>
-                                    <button class="delete-question-btn text-[#4b5563] hover:underline hover:text-[#374151]" data-test-id="${test.id}" data-question-id="${q._id || q.id}">Delete</button>
-                                </div>
-                            </div>
-                        `).join('')
-                        : '<p class="text-[#1a1a1a]">No questions assigned yet.</p>';
-
-                    testDetailsModal.style.display = 'block';
-
-                    // Add Question Button
-                    const addQuestionBtn = document.getElementById('add-question-btn');
-                    addQuestionBtn.onclick = () => {
-                        addQuestionModal.style.display = 'block';
-                        addQuestionForm.onsubmit = async (e) => {
-        e.preventDefault();
-
-        // Collect data from form
-        const questionText = document.getElementById('add-question-text').value.trim();
-        const options = [
-            document.getElementById('add-option-1').value.trim(),
-            document.getElementById('add-option-2').value.trim(),
-            document.getElementById('add-option-3').value.trim(),
-            document.getElementById('add-option-4').value.trim()
-        ];
-        const correctAnswer = parseInt(document.getElementById('add-correct-option').value);
-
-        const payload = {
-            questionText,
-            questionType: 'mcq',
-            subject: test.role,
-            difficulty: 'Easy',
-            options,
-            correctAnswer
-        };
-
-        try {
-            const response = await fetch(`/api/tests/${testId}/add-question`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...getAuthHeaders()
-                },
-                body: JSON.stringify(payload)
             });
 
-            const text = await response.text();
-                let result;
-                try {
-                    result = JSON.parse(text);
-                } catch (e) {
-                    result = { message: 'Server returned non-JSON response.' };
+            // Show Test Details Modal
+            const testDetailsModal = document.getElementById('test-details-modal');
+            const editQuestionModal = document.getElementById('edit-question-modal');
+            const editQuestionForm = document.getElementById('edit-question-form');
+            const addQuestionModal = document.getElementById('add-question-modal');
+            const addQuestionForm = document.getElementById('add-question-form');
+
+            async function showTestDetails(testId) {
+                const test = tests.find(t => t.id == testId);
+                if (!test) return;
+
+                document.getElementById('details-test-name').textContent = test.name;
+                document.getElementById('details-role').textContent = test.role;
+                // document.getElementById('details-date-added').textContent = test.dateAdded; // Remove this line
+                document.getElementById('details-duration').textContent = test.duration;
+
+                // Fetch questions for the test's role if needed
+                let questions = test.questions;
+                if (!questions || questions.length === 0) {
+                    questions = await fetchQuestionsForRole(test.role);
+                    test.questions = questions;
                 }
 
+                // Render questions
+                const questionsList = document.getElementById('questions-list');
+                questionsList.innerHTML = questions.length
+                    ? questions.map((q, index) => `
+                        <div class="question-item break-words">
+                            <p class="text-[#1a1a1a]"><strong>Question ${index + 1}:</strong> ${q.questionText || ''}</p>
+                            <ol class="list-decimal pl-5 text-[#1a1a1a]">
+                                ${q.options.map((opt, i) => `<li${i === q.correctAnswer ? ' class="font-bold"' : ''}>${opt}</li>`).join('')}
+                            </ol>
+                            <div class="mt-2">
+                                <button class="edit-question-btn text-[#6b7280] hover:underline hover:text-[#4b5563] mr-2" data-test-id="${test.id}" data-question-id="${q._id || q.id}">Edit</button>
+                                <button class="delete-question-btn text-[#4b5563] hover:underline hover:text-[#374151]" data-test-id="${test.id}" data-question-id="${q._id || q.id}">Delete</button>
+                            </div>
+                        </div>
+                    `).join('')
+                    : '<p class="text-[#1a1a1a]">No questions assigned yet.</p>';
 
-            if (response.ok) {
-                alert(result.message || 'Question added!');
-                addQuestionModal.style.display = 'none';
-                addQuestionForm.reset();
 
-                // Update frontend test object from the returned test document
-                test.questions = result.test.questions || [];
+                testDetailsModal.style.display = 'block';
 
-                // Refresh UI
-                showTestDetails(testId);
-            } else {
-                alert(result.message || 'Failed to add question.');
-                console.error(result);
-            }
-        } catch (err) {
-            alert('Error adding question.');
-            console.error(err);
-        }
+                // Add Question Button
+                const addQuestionBtn = document.getElementById('add-question-btn');
+                addQuestionBtn.onclick = () => {
+                    addQuestionModal.style.display = 'block';
+                    addQuestionForm.onsubmit = async (e) => {
+    e.preventDefault();
+
+    // Collect data from form
+    const questionText = document.getElementById('add-question-text').value.trim();
+    const options = [
+        document.getElementById('add-option-1').value.trim(),
+        document.getElementById('add-option-2').value.trim(),
+        document.getElementById('add-option-3').value.trim(),
+        document.getElementById('add-option-4').value.trim()
+    ];
+    const correctAnswer = parseInt(document.getElementById('add-correct-option').value);
+
+    const payload = {
+        questionText,
+        questionType: 'mcq',
+        subject: test.role,
+        difficulty: 'Easy',
+        options,
+        correctAnswer
     };
+
+    try {
+        const response = await fetch(`/api/tests/${testId}/add-question`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...getAuthHeaders()
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const text = await response.text();
+            let result;
+            try {
+                result = JSON.parse(text);
+            } catch (e) {
+                result = { message: 'Server returned non-JSON response.' };
+            }
+
+
+        if (response.ok) {
+            alert(result.message || 'Question added!');
+            addQuestionModal.style.display = 'none';
+            addQuestionForm.reset();
+
+            // Update frontend test object from the returned test document
+            test.questions = result.test.questions || [];
+
+            // Refresh UI
+            showTestDetails(testId);
+        } else {
+            alert(result.message || 'Failed to add question.');
+            console.error(result);
+        }
+    } catch (err) {
+        alert('Error adding question.');
+        console.error(err);
+    }
+};
 
                 };
 
@@ -783,118 +787,165 @@ async function deleteTest(testId) {
 
 
 
-            // Filter Handling
-            const startDateInput = document.getElementById('start-date');
-            const endDateInput = document.getElementById('end-date');
-            const roleSelect = document.getElementById('role-select');
-            const roleOptions = document.getElementById('role-options');
-            const clearFiltersBtn = document.getElementById('clear-filters');
+        // Filter Handling
+        const startDateInput = document.getElementById('start-date');
+        const endDateInput = document.getElementById('end-date');
+        const roleSelect = document.getElementById('role-select');
+        const roleOptions = document.getElementById('role-options');
+        const clearFiltersBtn = document.getElementById('clear-filters');
 
-            // Date Filter
-            startDateInput.addEventListener('change', () => {
-                filters.startDate = startDateInput.value;
+        // Date Filter
+        startDateInput.addEventListener('change', () => {
+            filters.startDate = startDateInput.value;
+            loadTests();
+        });
+        endDateInput.addEventListener('change', () => {
+            filters.endDate = endDateInput.value;
+            loadTests();
+        });
+
+        // Role Filter (Multi-select)
+        roleSelect.addEventListener('click', () => {
+            roleOptions.style.display = roleOptions.style.display === 'block' ? 'none' : 'block';
+        });
+
+        roleOptions.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                filters.roles = Array.from(roleOptions.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(cb => cb.value);
+                roleSelect.textContent = filters.roles.length > 0 ? filters.roles.join(', ') : 'Select Roles';
                 loadTests();
             });
-            endDateInput.addEventListener('change', () => {
-                filters.endDate = endDateInput.value;
-                loadTests();
-            });
+        });
 
-            // Role Filter (Multi-select)
-            roleSelect.addEventListener('click', () => {
-                roleOptions.style.display = roleOptions.style.display === 'block' ? 'none' : 'block';
-            });
-
-            roleOptions.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.addEventListener('change', () => {
-                    filters.roles = Array.from(roleOptions.querySelectorAll('input[type="checkbox"]:checked'))
-                        .map(cb => cb.value);
-                    roleSelect.textContent = filters.roles.length > 0 ? filters.roles.join(', ') : 'Select Roles';
-                    loadTests();
-                });
-            });
-
-            // Close role options when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!roleSelect.contains(e.target) && !roleOptions.contains(e.target)) {
-                    roleOptions.style.display = 'none';
-                }
-            });
-
-            // Clear Filters
-            clearFiltersBtn.addEventListener('click', () => {
-                filters = { startDate: null, endDate: null, roles: [] };
-                startDateInput.value = '';
-                endDateInput.value = '';
-                roleSelect.textContent = 'Select Roles';
-                roleOptions.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-                loadTests();
-            });
-
-            // Initial Load
-            fetchTestsFromBackend();
-
-            // Make the modal draggable and always open at the center-top like the screenshot
-            (function() {
-                const modal = document.getElementById('test-details-modal');
-                const modalContent = document.getElementById('draggable-modal-content');
-                const header = document.getElementById('modal-header');
-                let isDragging = false, offsetX = 0, offsetY = 0;
-
-                header.style.cursor = 'move';
-
-                header.addEventListener('mousedown', function(e) {
-                    isDragging = true;
-                    const rect = modalContent.getBoundingClientRect();
-                    offsetX = e.clientX - rect.left;
-                    offsetY = e.clientY - rect.top;
-                    document.body.style.userSelect = 'none';
-                });
-
-                document.addEventListener('mousemove', function(e) {
-                    if (isDragging) {
-                        modalContent.style.position = 'fixed';
-                        modalContent.style.left = (e.clientX - offsetX) + 'px';
-                        modalContent.style.top = (e.clientY - offsetY) + 'px';
-                        modalContent.style.transform = 'none';
-                        modalContent.style.margin = '0';
-                    }
-                });
-
-                document.addEventListener('mouseup', function() {
-                    isDragging = false;
-                    document.body.style.userSelect = '';
-                });
-
-                // Reset modal position to center-top when opened
-                function resetModalPosition() {
-                    modalContent.style.position = 'relative';
-                    modalContent.style.left = '0';
-                    modalContent.style.top = '60px';
-                    modalContent.style.transform = 'none';
-                    modalContent.style.margin = '0 auto';
-                }
-                // Attach to modal open
-                const observer = new MutationObserver(() => {
-                    if (modal.style.display === 'block') resetModalPosition();
-                });
-                observer.observe(modal, { attributes: true, attributeFilter: ['style'] });
-            })();
-
-            // Remove getSampleQuestions and all hardcoded question data
-            // Instead, fetch questions from the backend
-
-            // Example: Fetch questions for a role from the backend
-            async function fetchQuestionsForRole(role) {
-                try {
-                    const response = await fetch(`/api/question?role=${encodeURIComponent(role)}`);
-                    if (!response.ok) throw new Error('Failed to fetch questions');
-                    return await response.json(); // Should be an array of questions
-                } catch (err) {
-                    console.error('Error fetching questions:', err);
-                    return [];
-                }
+        // Close role options when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!roleSelect.contains(e.target) && !roleOptions.contains(e.target)) {
+                roleOptions.style.display = 'none';
             }
-        </script>
-    </body>
-    </html>
+        });
+
+        // Clear Filters
+        clearFiltersBtn.addEventListener('click', () => {
+            filters = { startDate: null, endDate: null, roles: [] };
+            startDateInput.value = '';
+            endDateInput.value = '';
+            roleSelect.textContent = 'Select Roles';
+            roleOptions.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
+            loadTests();
+        });
+
+        // Initial Load
+        fetchTestsFromBackend();
+
+        // Make the modal draggable and always open at the center-top like the screenshot
+        (function() {
+            const modal = document.getElementById('test-details-modal');
+            const modalContent = document.getElementById('draggable-modal-content');
+            const header = document.getElementById('modal-header');
+            let isDragging = false, offsetX = 0, offsetY = 0;
+
+            header.style.cursor = 'move';
+
+            header.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                const rect = modalContent.getBoundingClientRect();
+                offsetX = e.clientX - rect.left;
+                offsetY = e.clientY - rect.top;
+                document.body.style.userSelect = 'none';
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (isDragging) {
+                    modalContent.style.position = 'fixed';
+                    modalContent.style.left = (e.clientX - offsetX) + 'px';
+                    modalContent.style.top = (e.clientY - offsetY) + 'px';
+                    modalContent.style.transform = 'none';
+                    modalContent.style.margin = '0';
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                isDragging = false;
+                document.body.style.userSelect = '';
+            });
+
+            // Reset modal position to center-top when opened
+            function resetModalPosition() {
+                modalContent.style.position = 'relative';
+                modalContent.style.left = '0';
+                modalContent.style.top = '60px';
+                modalContent.style.transform = 'none';
+                modalContent.style.margin = '0 auto';
+            }
+            // Attach to modal open
+            const observer = new MutationObserver(() => {
+                if (modal.style.display === 'block') resetModalPosition();
+            });
+            observer.observe(modal, { attributes: true, attributeFilter: ['style'] });
+        })();
+
+        // Remove getSampleQuestions and all hardcoded question data
+        // Instead, fetch questions from the backend
+
+        // Example: Fetch questions for a role from the backend
+        async function fetchQuestionsForRole(role) {
+            try {
+                const response = await fetch(`/api/question?role=${encodeURIComponent(role)}`);
+                if (!response.ok) throw new Error('Failed to fetch questions');
+                return await response.json(); // Should be an array of questions
+            } catch (err) {
+                console.error('Error fetching questions:', err);
+                return [];
+            }
+        }
+
+        // Universal logout confirmation for all HR-dashboard pages
+        function setupLogoutButton() {
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    // Use a custom modal for confirmation with Cancel/Logout buttons
+                    if (document.getElementById('logout-modal')) return; // Prevent multiple modals
+
+                    const modal = document.createElement('div');
+                    modal.id = 'logout-modal';
+                    modal.style.position = 'fixed';
+                    modal.style.top = 0;
+                    modal.style.left = 0;
+                    modal.style.width = '100vw';
+                    modal.style.height = '100vh';
+                    modal.style.background = 'rgba(0,0,0,0.4)';
+                    modal.style.display = 'flex';
+                    modal.style.alignItems = 'center';
+                    modal.style.justifyContent = 'center';
+                    modal.style.zIndex = 9999;
+                    modal.innerHTML = `
+                    <div style="background:#fff;padding:2rem 2.5rem;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.18);max-width:350px;text-align:center;">
+                        <h2 class="text-xl font-bold mb-4">Log out?</h2>
+                        <p class="mb-6">Are you sure you want to log out?</p>
+                        <div style="display:flex;gap:1rem;justify-content:center;">
+                        <button id="cancel-logout" style="padding:0.5rem 1.5rem;border-radius:8px;background:#e5e7eb;color:#222;border:none;font-weight:500;cursor:pointer;">Cancel</button>
+                        <button id="confirm-logout" style="padding:0.5rem 1.5rem;border-radius:8px;background:#000;color:#fff;border:none;font-weight:500;cursor:pointer;">Logout</button>
+                        </div>
+                    </div>
+                    `;
+                    document.body.appendChild(modal);
+
+                    document.getElementById('cancel-logout').onclick = function() {
+                        document.body.removeChild(modal);
+                    };
+                    document.getElementById('confirm-logout').onclick = function() {
+                        localStorage.clear();
+                        sessionStorage.clear();
+                        window.location.href = '/login-page/login.html';
+                    };
+                });
+            }
+        }
+        setupLogoutButton();
+
+    </script>
+</body>
+</html>
