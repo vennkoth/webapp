@@ -215,11 +215,12 @@ async function fetchUsersFromDB() {
         </div>
         <div class="report-section">
           <h3 class="text-xl font-semibold mb-2">Interview Assessment</h3>
-          <p><strong>Score:</strong> ${user.interview_score}/100</p>
-          <div class="w-full bg-gray-200 rounded-full h-2.5 mt-2 mb-4">
-            <div class="bg-black h-2.5 rounded-full" style="width: ${user.interview_score}%"></div>
-          </div>
+
+
+          <!-- add a function that will allow hr to download the test taken by the candidate -->
         
+
+          
         <div class="mt-6 flex justify-between">
           <button onclick="backToReports()" class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300">← Back to Reports</button>
           <button onclick="downloadReport(${JSON.stringify(user)})" class="download-btn">Download Report</button>
