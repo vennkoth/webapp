@@ -124,9 +124,11 @@
                 background-color: #f5f5f5;
             }
             .question-item {
+                word-break: break-word;
                 border-bottom: 1px solid #d1d5db;
                 padding: 10px 0;
             }
+
             .question-item:last-child {
                 border-bottom: none;
             }
@@ -238,7 +240,7 @@
 
             <!-- Professional Test Details Modal -->
             <div id="test-details-modal" class="modal">
-                <div class="modal-content shadow-2xl" id="draggable-modal-content"
+                <div class="modal-content shadow-2xl w-[90%] max-w-[1000px] max-h-[90vh] overflow-y-auto break-words" id="draggable-modal-content"
                     style="max-height:80vh; overflow-y:auto; cursor:move; box-shadow: 0 10px 40px rgba(0,0,0,0.2); margin: 0 auto; position: relative; left: 0; top: 60px; transform: none;">
                     <span class="close-btn hover:text-red-500 transition-colors duration-200">&times;</span>
                     <div class="flex items-center mb-4">
@@ -542,10 +544,10 @@
                     const questionsList = document.getElementById('questions-list');
                     questionsList.innerHTML = questions.length
                         ? questions.map((q, index) => `
-                            <div class="question-item">
-                                <p class="text-[#1a1a1a]"><strong>Question ${index + 1}:</strong> ${q.text}</p>
+                            <div class="question-item break-words">
+                                <p class="text-[#1a1a1a]"><strong>Question ${index + 1}:</strong> ${q.questionText || ''}</p>
                                 <ol class="list-decimal pl-5 text-[#1a1a1a]">
-                                    ${q.options.map((opt, i) => `<li${i === q.correct ? ' class="font-bold"' : ''}>${opt}</li>`).join('')}
+                                    ${q.options.map((opt, i) => `<li${i === q.correctAnswer ? ' class="font-bold"' : ''}>${opt}</li>`).join('')}
                                 </ol>
                                 <div class="mt-2">
                                     <button class="edit-question-btn text-[#6b7280] hover:underline hover:text-[#4b5563] mr-2" data-test-id="${test.id}" data-question-id="${q._id || q.id}">Edit</button>
@@ -554,6 +556,7 @@
                             </div>
                         `).join('')
                         : '<p class="text-[#1a1a1a]">No questions assigned yet.</p>';
+
 
                     testDetailsModal.style.display = 'block';
 
