@@ -14,7 +14,9 @@ const testSchema = new mongoose.Schema({
   role: String,
   duration: Number,
   dateAdded: Date,
-  questions: [questionSchema]
+  questions: [questionSchema],
+
+candidates: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 });
 
 module.exports = mongoose.model('Test', testSchema);

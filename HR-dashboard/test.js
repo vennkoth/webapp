@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeFilters();
 });
 
+
 function initializeSidebar() {
     // Set active state for current page
     const currentPage = document.querySelector('.sidebar a[href="test.html"]');
@@ -97,3 +98,37 @@ function applyFilters() {
     console.log('Applying filters:', { startDate, endDate, role });
     // Add your filter logic here
 }
+
+document.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('view-candidates')) {
+        e.preventDefault(); 
+      const testId = e.target.dataset.id;
+      const modal = document.getElementById('viewCandidatesModal');
+      const list = document.getElementById('assignedCandidatesList');
+      
+      try {
+        const res = await fetch(`/api/tests/${testId}`);
+        const test = await res.json();
+  
+        if (!test.candidates || test.candidates.length === 0) {
+          list.innerHTML = '<p class="text-gray-500">No candidates assigned yet.</p>';
+        } else {
+          list.innerHTML = test.candidates.map(user => `
+            <div class="flex justify-between items-center px-3 py-2 border rounded">
+              <span>${user.fullName} (${user.email})</span>
+            </div>
+          `).join('');
+        }
+  
+        modal.classList.remove('hidden');
+      } catch (err) {
+        console.error('Error loading assigned candidates:', err);
+      }
+    }
+  });
+  
+  // Close view modal
+  document.getElementById('closeViewCandidatesModal').addEventListener('click', () => {
+    document.getElementById('viewCandidatesModal').classList.add('hidden');
+  });
+  

@@ -406,6 +406,8 @@
                     <td class="p-3">
                         <button class="view-details-btn text-[#6b7280] hover:underline hover:text-[#4b5563] mr-2" data-id="${test.id}">View Details</button>
                         <button class="delete-test-btn text-[#4b5563] hover:underline hover:text-[#374151]" data-id="${test.id}">Delete</button>
+                        <button class="assign-btn text-blue-500 hover:underline" data-id="${test.id}">Assign</button>
+
                     </td>
                 `;
                 tableBody.appendChild(row);
@@ -946,6 +948,129 @@ async function deleteTest(testId) {
         }
         setupLogoutButton();
 
+        document.addEventListener('DOMContentLoaded', () => {
+  const assignModal = document.getElementById('assignModal');
+  const closeAssignBtn = document.getElementById('closeAssignModal');
+  const candidateInput = document.getElementById('candidateInput');
+  const suggestionsBox = document.getElementById('candidateSuggestions');
+  const confirmAssignBtn = document.getElementById('confirmAssignBtn');
+  const assignedCandidates = document.getElementById('assignedCandidates');
+
+  let selectedTestId = null;
+  let candidateList = [];
+
+  // Open modal on assign button
+  document.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('assign-btn')) {
+      selectedTestId = e.target.dataset.id;
+      assignModal.style.display = 'block';
+      loadAssignedCandidates(selectedTestId);
+    }
+  });
+
+  // Close modal
+  closeAssignBtn.addEventListener('click', () => {
+    assignModal.style.display = 'none';
+    candidateInput.value = '';
+    suggestionsBox.innerHTML = '';
+    assignedCandidates.innerHTML = '';
+  });
+
+  candidateInput.addEventListener('input', async () => {
+  const query = candidateInput.value.trim();
+  if (!query) {
+    suggestionsBox.classList.add('hidden');
+    return;
+  }
+  const res = await fetch(`/api/users/search?query=${encodeURIComponent(query)}`);
+  const users = await res.json();
+  candidateList = users;
+
+  suggestionsBox.innerHTML = users.map(user => 
+    `<li class="px-2 py-1 hover:bg-gray-100 cursor-pointer" data-id="${user.id}">
+      ${user.name} (${user.email})
+    </li>`
+  ).join('');
+  suggestionsBox.classList.remove('hidden');
+});
+
+  // Select user from suggestions
+  suggestionsBox.addEventListener('click', (e) => {
+    if (e.target.tagName === 'LI') {
+      candidateInput.value = e.target.textContent;
+      candidateInput.dataset.userId = e.target.dataset.id;
+      suggestionsBox.classList.add('hidden');
+    }
+  });
+
+  // Assign candidate to test
+  confirmAssignBtn.addEventListener('click', async () => {
+    const userId = candidateInput.dataset.userId;
+    if (!userId || !selectedTestId) {
+      alert('Select a valid candidate.');
+      return;
+    }
+
+    const res = await fetch(`/api/tests/${selectedTestId}/assign`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId })
+    });
+    const result = await res.json();
+    if (res.ok) {
+      alert('Candidate assigned!');
+      loadAssignedCandidates(selectedTestId);
+      candidateInput.value = '';
+      candidateInput.dataset.userId = '';
+    } else {
+      alert(result.message || 'Error assigning.');
+    }
+  });
+
+  // Load assigned users
+  async function loadAssignedCandidates(testId) {
+    const res = await fetch(`/api/tests/${testId}`);
+    const test = await res.json();
+    assignedCandidates.innerHTML = test.candidates.map(user => `
+      <div class="flex justify-between items-center px-3 py-2 border rounded">
+        <span>${user.fullName} (${user.email})</span>
+        <button class="remove-user text-red-500" data-user-id="${user._id}">🗑</button>
+      </div>
+    `).join('');
+  }
+
+  // Remove candidate
+  assignedCandidates.addEventListener('click', async (e) => {
+    if (e.target.classList.contains('remove-user')) {
+      const userId = e.target.dataset.userId;
+      const res = await fetch(`/api/tests/${selectedTestId}/remove`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      if (res.ok) {
+        loadAssignedCandidates(selectedTestId);
+      }
+    }
+  });
+});
+
+
     </script>
+            //assign modal
+            <div id="assignModal" class="modal">
+              <div class="modal-content max-w-lg">
+                <span id="closeAssignModal" class="close-btn">&times;</span>
+                <h3 class="text-xl font-bold mb-4 text-[#1a1a1a]">Assign Candidate</h3>
+                
+                <input id="candidateInput" type="text" placeholder="Search by name or email" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded mb-2" />
+                <ul id="candidateSuggestions" class="border border-gray-300 rounded max-h-40 overflow-y-auto hidden bg-white mb-4"></ul>
+                
+                <button id="confirmAssignBtn" class="bg-black text-white px-4 py-2 rounded">Assign</button>
+                
+                <div id="assignedCandidates" class="mt-4 space-y-2"></div>
+              </div>
+            </div>
 </body>
 </html>
