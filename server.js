@@ -10,6 +10,8 @@ const fs = require('fs');
 const authRoutes = require('./routes/auth');
 const examRoutes = require('./routes/exam');
 const testRoutes = require('./routes/testRoutes'); // <-- Add this after other route imports
+const userRoutes = require('./routes/users');
+
 
 // Load environment variables
 dotenv.config();
@@ -43,6 +45,8 @@ app.use('/HR-dashboard', express.static(path.join(__dirname, 'HR-dashboard')));
 app.use('/user-dashboard', express.static(path.join(__dirname, 'user-dashboard')));
 app.use('/login-page', express.static(path.join(__dirname, 'login-page')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/users', userRoutes); // 👈 THIS LINE IS MISSING
+
 
 // API routes
 
