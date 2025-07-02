@@ -8,7 +8,6 @@ const fs = require('fs');
 
 // Import routes
 const authRoutes = require('./routes/auth');
-const examRoutes = require('./routes/exam');
 const testRoutes = require('./routes/testRoutes'); // <-- Add this after other route imports
 const userRoutes = require('./routes/users');
 
@@ -51,7 +50,6 @@ app.use('/api/users', userRoutes); // 👈 THIS LINE IS MISSING
 // API routes
 
 app.use('/api/auth', authRoutes);
-app.use('/api/exams', examRoutes);
 app.use('/api/tests', testRoutes); // <-- Add this after examRoutes
 
 app.get('/', (req, res) => {
