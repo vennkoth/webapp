@@ -1,8 +1,139 @@
 const express = require('express');
 const router = express.Router();
 const Test = require('../models/Test');
+const { auth, authorize } = require('../middleware/authMiddleware');
 
-// ADD QUESTION TO TEST
+// ✅ CREATE A NEW TEST (PUBLIC)
+router.post('/', async (req, res) => {
+    try {
+        console.log('Received POST /api/tests with body:', req.body);
+
+        const { name, role, duration } = req.body;
+
+        if (!name || !role || !duration) {
+            console.error('Missing required fields:', { name, role, duration });
+            return res.status(400).json({ message: 'All fields (name, role, duration) are required.' });
+        }
+
+        const test = new Test({ name, role, duration });
+        const savedTest = await test.save();
+
+        console.log('Test created:', savedTest);
+        res.status(201).json({ message: 'Test created successfully!', test: savedTest });
+    } catch (err) {
+        console.error('Error creating test:', err);
+        res.status(500).json({ message: err.message || 'Error creating test' });
+    }
+});
+
+// ✅ GET ALL TESTS
+router.get('/', async (req, res) => {
+    try {
+        const tests = await Test.find().sort({ dateAdded: -1 });
+        res.json(tests);
+    } catch (err) {
+        console.error('❌ Error fetching tests:', err);
+        res.status(500).json({ message: 'Error fetching tests', error: err.message });
+    }
+});
+
+// ✅ GET USER'S ASSIGNED TESTS
+router.get('/my-tests', auth, async (req, res) => {
+    try {
+        const tests = await Test.find({
+            candidates: req.user._id
+        }).sort({ dateAdded: -1 });
+
+        res.json(tests);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching user tests', error: err.message });
+    }
+});
+
+// ✅ GET SPECIFIC TEST
+router.get('/:testId', async (req, res) => {
+    try {
+        const test = await Test.findById(req.params.testId).populate('candidates', 'fullName email');
+        if (!test) return res.status(404).json({ message: 'Test not found' });
+        res.json(test);
+    } catch (err) {
+        res.status(500).json({ message: 'Error fetching test' });
+    }
+});
+
+// ✅ UPDATE A TEST (HR only)
+router.put('/:testId', auth, authorize('hr', 'admin'), async (req, res) => {
+    try {
+        const test = await Test.findByIdAndUpdate(
+            req.params.testId,
+            req.body,
+            { new: true, runValidators: true }
+        );
+        if (!test) {
+            return res.status(404).json({ message: 'Test not found' });
+        }
+        res.json(test);
+    } catch (err) {
+        res.status(500).json({ message: 'Error updating test', error: err.message });
+    }
+});
+
+// ✅ DELETE A TEST (HR only)
+router.delete('/:testId', auth, authorize('hr', 'admin'), async (req, res) => {
+    try {
+        const test = await Test.findByIdAndDelete(req.params.testId);
+        if (!test) {
+            return res.status(404).json({ message: 'Test not found' });
+        }
+        res.json({ message: 'Test deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Error deleting test', error: err.message });
+    }
+});
+
+// ✅ SUBMIT A TEST
+router.post('/:testId/submit', auth, async (req, res) => {
+    try {
+        const test = await Test.findById(req.params.testId);
+        if (!test) {
+            return res.status(404).json({ message: 'Test not found' });
+        }
+
+        const participantIndex = test.participants?.findIndex(
+            p => p.user?.toString() === req.user._id.toString()
+        );
+
+        if (participantIndex === -1 || participantIndex === undefined) {
+            return res.status(403).json({ message: 'Not authorized to take this test' });
+        }
+
+        const answers = req.body.answers;
+        let score = 0;
+
+        answers.forEach((answer, index) => {
+            if (test.questions[index] && answer === test.questions[index].correctAnswer) {
+                score += test.questions[index].points || 1;
+            }
+        });
+
+        test.participants[participantIndex].score = score;
+        test.participants[participantIndex].status = 'completed';
+        test.participants[participantIndex].submittedAt = new Date();
+
+        await test.save();
+
+        res.json({
+            message: 'Test submitted successfully',
+            score,
+            totalPoints: test.questions.reduce((sum, q) => sum + (q.points || 1), 0)
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error submitting test', error: err.message });
+    }
+});
+
+// ✅ ADD QUESTION TO TEST
 router.post('/:testId/add-question', async (req, res) => {
     try {
         const testId = req.params.testId;
@@ -50,7 +181,7 @@ router.post('/:testId/add-question', async (req, res) => {
     }
 });
 
-// FETCH QUESTIONS
+// ✅ FETCH QUESTIONS
 router.get('/:testId/questions', async (req, res) => {
     try {
         const test = await Test.findById(req.params.testId);
@@ -61,7 +192,7 @@ router.get('/:testId/questions', async (req, res) => {
     }
 });
 
-// DELETE A QUESTION
+// ✅ DELETE A QUESTION
 router.delete('/:testId/questions/:questionId', async (req, res) => {
     try {
         const { testId, questionId } = req.params;
@@ -77,7 +208,7 @@ router.delete('/:testId/questions/:questionId', async (req, res) => {
     }
 });
 
-// UPDATE A QUESTION
+// ✅ UPDATE A QUESTION
 router.put('/:testId/questions/:questionId', async (req, res) => {
     try {
         const { testId, questionId } = req.params;
@@ -100,7 +231,7 @@ router.put('/:testId/questions/:questionId', async (req, res) => {
     }
 });
 
-// ✅ ASSIGN CANDIDATE TO TEST (Only One Version!)
+// ✅ ASSIGN CANDIDATE TO TEST
 router.post('/:testId/assign', async (req, res) => {
     try {
         const { testId } = req.params;
@@ -138,17 +269,6 @@ router.post('/:testId/remove', async (req, res) => {
         res.status(200).json({ message: 'Candidate removed', test });
     } catch (err) {
         res.status(500).json({ message: 'Server error' });
-    }
-});
-
-// ✅ GET TEST WITH ASSIGNED CANDIDATES
-router.get('/:testId', async (req, res) => {
-    try {
-        const test = await Test.findById(req.params.testId).populate('candidates', 'fullName email');
-        if (!test) return res.status(404).json({ message: 'Test not found' });
-        res.json(test);
-    } catch (err) {
-        res.status(500).json({ message: 'Error fetching test' });
     }
 });
 
