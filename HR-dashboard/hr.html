@@ -146,13 +146,13 @@
 
   <!-- JavaScript -->
   <script>
+let tests = [];
 let users = [];
-let availableTests = [];
 
 // Fetch users
 async function fetchUsers() {
   try {
-    const res = await fetch("http://localhost:5001/api/auth/hr/candidates");
+    const res = await fetch("/api/auth/hr/candidates");
     const data = await res.json();
     users = data.users;
     renderUsers(users);
@@ -167,11 +167,22 @@ async function fetchAvailableTests() {
   try {
     const res = await fetch("/api/tests");
     const data = await res.json();
-    availableTests = data.tests || [];
+    console.log("✅ Raw /api/tests response:", data); // Add this to inspect
+    tests = Array.isArray(data.tests) ? data.tests : data;
+    console.log("📦 Tests available for dropdown:", tests);
   } catch (err) {
-    availableTests = [];
+    tests = [];
     console.error("Error fetching tests:", err);
   }
+}
+
+function updateTestDropdowns() {
+  const select = document.getElementById('assign-test-select');
+  if (!select) return;
+
+  select.innerHTML = tests.length
+    ? tests.map(t => `<option value="${t._id}">${t.name}</option>`).join('')
+    : `<option disabled>No tests available</option>`;
 }
 
     function renderUsers(data) {
@@ -301,6 +312,11 @@ async function fetchAvailableTests() {
         const userId = btn.getAttribute('data-user-id');
         const userName = btn.getAttribute('data-user-name');
         const userEmail = btn.getAttribute('data-user-email');
+        await fetchAvailableTests();
+        updateTestDropdowns();
+
+
+
 
         // Remove any existing popup
         if (assignPopup) assignPopup.remove();
@@ -332,9 +348,10 @@ async function fetchAvailableTests() {
         assignPopup.style.textAlign = 'center';
 
         // Build test dropdown
-        let testOptions = availableTests.length
-          ? availableTests.map(t => `<option value="${t._id || t.id}">${t.name}</option>`).join('')
-          : `<option disabled>No tests available</option>`;
+        let testOptions = tests.length
+  ? tests.map(t => `<option value="${t._id}">${t.name}</option>`).join('')
+  : `<option disabled>No tests available</option>`;
+
 
         assignPopup.innerHTML = `
           <button id="close-assign-popup" style="position:absolute;top:10px;right:16px;font-size:22px;background:none;border:none;cursor:pointer;color:#888;">&times;</button>
@@ -342,9 +359,9 @@ async function fetchAvailableTests() {
           <p class="mb-2"><strong>Candidate:</strong> ${userName} (${userEmail})</p>
           <div class="mb-4">
             <label for="assign-test-select" class="block mb-1 font-semibold">Select Test</label>
-            <select id="assign-test-select" class="w-full p-2 border border-gray-300 rounded">
-              ${testOptions}
-            </select>
+              <select id="assign-test-select" class="w-full p-2 border border-gray-300 rounded">
+  ${testOptions}
+</select>
           </div>
           <div class="flex gap-2 justify-center mt-6">
             <button id="confirm-assign-popup" class="bg-black text-white px-4 py-2 rounded">Assign</button>
@@ -378,10 +395,10 @@ async function fetchAvailableTests() {
           confirmBtn.disabled = true;
           confirmBtn.textContent = 'Assigning...';
           try {
-            const res = await fetch('/api/tests/assign', {
+            const res = await fetch(`/api/tests/${testId}/assign`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ userId, testId })
+              body: JSON.stringify({userId})
             });
             const result = await res.json();
             if (res.ok) {
