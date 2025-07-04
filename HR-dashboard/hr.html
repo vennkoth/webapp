@@ -101,6 +101,14 @@
   <div class="main-content">
     <h1 class="text-4xl font-bold mb-6">HR Dashboard</h1>
 
+    <!-- Permanent Test Dropdown -->
+    <div class="mb-6 flex items-center gap-4">
+      <label for="permanent-test-dropdown" class="font-semibold">Select Test:</label>
+      <select id="permanent-test-dropdown" class="w-64 p-2 border border-gray-300 rounded">
+        <option value="">Loading tests...</option>
+      </select>
+    </div>
+
     <!-- Search and Filter -->
     <div class="mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200 flex flex-wrap gap-4 items-center">
       <input type="text" id="searchName" placeholder="Search by Name" class="w-64">
@@ -148,6 +156,29 @@
   <script>
 let tests = [];
 let users = [];
+let assignedCandidates = []; // userIds assigned to selected test
+let selectedTestId = "";
+
+// Fetch all tests and populate permanent dropdown
+async function fetchAndPopulateTestsDropdown() {
+  try {
+    const res = await fetch("/api/tests");
+    const data = await res.json();
+    tests = Array.isArray(data.tests) ? data.tests : data;
+    const dropdown = document.getElementById('permanent-test-dropdown');
+    if (tests.length) {
+      dropdown.innerHTML = tests.map(t => `<option value="${t._id}">${t.name}</option>`).join('');
+      selectedTestId = tests[0]._id;
+      dropdown.value = selectedTestId;
+    } else {
+      dropdown.innerHTML = `<option disabled>No tests available</option>`;
+      selectedTestId = "";
+    }
+  } catch (err) {
+    document.getElementById('permanent-test-dropdown').innerHTML = `<option disabled>Error loading tests</option>`;
+    selectedTestId = "";
+  }
+}
 
 // Fetch users
 async function fetchUsers() {
@@ -156,273 +187,309 @@ async function fetchUsers() {
     const data = await res.json();
     users = data.users;
     renderUsers(users);
+    await updateAssignedCandidatesAndButtons();
   } catch (err) {
     console.error("Error fetching users:", err);
     alert("Failed to load candidates.");
   }
 }
 
-// Fetch available tests for assignment
-async function fetchAvailableTests() {
+// Fetch assigned candidates for the selected test
+async function fetchAssignedCandidates(testId) {
+  if (!testId) {
+    assignedCandidates = [];
+    return;
+  }
   try {
-    const res = await fetch("/api/tests");
+    const res = await fetch(`/api/tests/${testId}`);
     const data = await res.json();
-    console.log("✅ Raw /api/tests response:", data); // Add this to inspect
-    tests = Array.isArray(data.tests) ? data.tests : data;
-    console.log("📦 Tests available for dropdown:", tests);
+    // Try to get assigned candidates from different possible keys
+    assignedCandidates = Array.isArray(data.assigned) ? data.assigned
+      : Array.isArray(data.candidates) ? data.candidates
+      : Array.isArray(data.assignedCandidates) ? data.assignedCandidates
+      : [];
+    // If assignedCandidates is array of objects with _id, map to _id
+    if (assignedCandidates.length && typeof assignedCandidates[0] === 'object') {
+      assignedCandidates = assignedCandidates.map(u => u._id || u.id || u);
+    }
   } catch (err) {
-    tests = [];
-    console.error("Error fetching tests:", err);
+    assignedCandidates = [];
   }
 }
 
-function updateTestDropdowns() {
-  const select = document.getElementById('assign-test-select');
-  if (!select) return;
-
-  select.innerHTML = tests.length
-    ? tests.map(t => `<option value="${t._id}">${t.name}</option>`).join('')
-    : `<option disabled>No tests available</option>`;
+// Update Assign buttons based on assignedCandidates
+function updateAssignButtons() {
+  document.querySelectorAll('.assign-candidate-btn').forEach(btn => {
+    const userId = btn.getAttribute('data-user-id');
+    const assigned = assignedCandidates.includes(userId);
+    if (assigned) {
+      btn.textContent = 'Assigned';
+      btn.classList.remove('bg-blue-600', 'bg-blue-500');
+      btn.classList.add('bg-gray-400');
+      btn.disabled = true;
+      if (btn.nextElementSibling) btn.nextElementSibling.style.display = 'inline';
+    } else {
+      btn.textContent = 'Assign';
+      btn.classList.add('bg-blue-600');
+      btn.classList.remove('bg-gray-400');
+      btn.disabled = false;
+      if (btn.nextElementSibling) btn.nextElementSibling.style.display = 'none';
+    }
+  });
 }
 
-    function renderUsers(data) {
-      const table = document.getElementById("userTable");
-      table.innerHTML = "";
-      data.forEach(user => {
-        table.innerHTML += `
-          <tr>
-            <td class="p-3">${user._id}</td>
-            <td class="p-3">${user.fullName}</td>
-            <td class="p-3">${user.email}</td>
-            <td class="p-3">
-              <a href="${user.resumeUrl || '#'}" class="download-btn" download>Download</a>
-            </td>
-            <td class="p-3">
-              <button class="assign-candidate-btn bg-blue-600 text-white px-3 py-1 rounded"
-                data-user-id="${user._id}" data-user-name="${user.fullName}" data-user-email="${user.email}">
-                Assign
-              </button>
-              <span class="assign-status ml-2 text-green-600 text-sm" style="display:none;">Assigned</span>
-            </td>
-          </tr>
-        `;
-      });
+// Fetch assigned candidates and update buttons
+async function updateAssignedCandidatesAndButtons() {
+  await fetchAssignedCandidates(selectedTestId);
+  updateAssignButtons();
+}
+
+function renderUsers(data) {
+  const table = document.getElementById("userTable");
+  table.innerHTML = "";
+  data.forEach(user => {
+    table.innerHTML += `
+      <tr>
+        <td class="p-3">${user._id}</td>
+        <td class="p-3">${user.fullName}</td>
+        <td class="p-3">${user.email}</td>
+        <td class="p-3">
+          <a href="${user.resumeUrl || '#'}" class="download-btn" download>Download</a>
+        </td>
+        <td class="p-3">
+          <button class="assign-candidate-btn bg-blue-600 text-white px-3 py-1 rounded"
+            data-user-id="${user._id}" data-user-name="${user.fullName}" data-user-email="${user.email}">
+            Assign
+          </button>
+          <span class="assign-status ml-2 text-green-600 text-sm" style="display:none;">All Tests Assigned</span>
+        </td>
+      </tr>
+    `;
+  });
+  updateAssignButtons();
+}
+
+function parseTime(timeStr) {
+  const [time, meridian] = timeStr.split(" ");
+  let [hours, minutes] = time.split(":").map(Number);
+  if (meridian === "PM" && hours !== 12) hours += 12;
+  if (meridian === "AM" && hours === 12) hours = 0;
+  return hours * 60 + minutes;
+}
+
+function applySearch() {
+  const nameInput = document.getElementById("searchName").value.toLowerCase();
+  const timeInput = document.getElementById("searchTime").value.toLowerCase();
+  const sortBy = document.getElementById("sortBy").value;
+
+  let filtered = users.filter(user =>
+    user.name.toLowerCase().includes(nameInput) &&
+    user.time.toLowerCase().includes(timeInput)
+  );
+
+  switch (sortBy) {
+    case "name-asc":
+      filtered.sort((a, b) => a.name.localeCompare(b.name));
+      break;
+    case "name-desc":
+      filtered.sort((a, b) => b.name.localeCompare(a.name));
+      break;
+    case "time-asc":
+      filtered.sort((a, b) => parseTime(a.time) - parseTime(b.time));
+      break;
+    case "time-desc":
+      filtered.sort((a, b) => parseTime(b.time) - parseTime(a.time));
+      break;
+  }
+
+  renderUsers(filtered);
+}
+
+function clearSearch() {
+  document.getElementById("searchName").value = "";
+  document.getElementById("searchTime").value = "";
+  document.getElementById("sortBy").value = "";
+  renderUsers(users);
+}
+
+window.onload = async () => {
+  await fetchAndPopulateTestsDropdown();
+  await fetchUsers();
+  await updateAssignedCandidatesAndButtons();
+};
+
+// Permanent test dropdown change handler
+document.addEventListener('DOMContentLoaded', function() {
+  const dropdown = document.getElementById('permanent-test-dropdown');
+  dropdown.addEventListener('change', async function() {
+    selectedTestId = this.value;
+    await updateAssignedCandidatesAndButtons();
+  });
+});
+
+// Universal logout confirmation for all HR-dashboard pages
+function setupLogoutButton() {
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            // Use a custom modal for confirmation with Cancel/Logout buttons
+            if (document.getElementById('logout-modal')) return; // Prevent multiple modals
+
+            const modal = document.createElement('div');
+            modal.id = 'logout-modal';
+            modal.style.position = 'fixed';
+            modal.style.top = 0;
+            modal.style.left = 0;
+            modal.style.width = '100vw';
+            modal.style.height = '100vh';
+            modal.style.background = 'rgba(0,0,0,0.4)';
+            modal.style.display = 'flex';
+            modal.style.alignItems = 'center';
+            modal.style.justifyContent = 'center';
+            modal.style.zIndex = 9999;
+            modal.innerHTML = `
+              <div style="background:#fff;padding:2rem 2.5rem;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.18);max-width:350px;text-align:center;">
+                <h2 class="text-xl font-bold mb-4">Log out?</h2>
+                <p class="mb-6">Are you sure you want to log out?</p>
+                <div style="display:flex;gap:1rem;justify-content:center;">
+                  <button id="cancel-logout" style="padding:0.5rem 1.5rem;border-radius:8px;background:#e5e7eb;color:#222;border:none;font-weight:500;cursor:pointer;">Cancel</button>
+                  <button id="confirm-logout" style="padding:0.5rem 1.5rem;border-radius:8px;background:#000;color:#fff;border:none;font-weight:500;cursor:pointer;">Logout</button>
+                </div>
+              </div>
+            `;
+            document.body.appendChild(modal);
+
+            document.getElementById('cancel-logout').onclick = function() {
+                document.body.removeChild(modal);
+            };
+            document.getElementById('confirm-logout').onclick = function() {
+                localStorage.clear();
+                sessionStorage.clear();
+                window.location.href = '/login-page/login.html';
+            };
+        });
     }
+}
+setupLogoutButton();
 
-    function parseTime(timeStr) {
-      const [time, meridian] = timeStr.split(" ");
-      let [hours, minutes] = time.split(":").map(Number);
-      if (meridian === "PM" && hours !== 12) hours += 12;
-      if (meridian === "AM" && hours === 12) hours = 0;
-      return hours * 60 + minutes;
-    }
+// Assign button logic with test selection modal
+let assignPopup = null;
+let assignPopupBackdrop = null;
 
-    function applySearch() {
-      const nameInput = document.getElementById("searchName").value.toLowerCase();
-      const timeInput = document.getElementById("searchTime").value.toLowerCase();
-      const sortBy = document.getElementById("sortBy").value;
+document.addEventListener('click', async function(e) {
+  if (e.target.classList.contains('assign-candidate-btn')) {
+    const btn = e.target;
+    const userId = btn.getAttribute('data-user-id');
+    const userName = btn.getAttribute('data-user-name');
+    const userEmail = btn.getAttribute('data-user-email');
+    // Always fetch latest tests for popup dropdown
+    await fetchAndPopulateTestsDropdown();
 
-      let filtered = users.filter(user =>
-        user.name.toLowerCase().includes(nameInput) &&
-        user.time.toLowerCase().includes(timeInput)
-      );
+    // Remove any existing popup
+    if (assignPopup) assignPopup.remove();
+    if (assignPopupBackdrop) assignPopupBackdrop.remove();
 
-      switch (sortBy) {
-        case "name-asc":
-          filtered.sort((a, b) => a.name.localeCompare(b.name));
-          break;
-        case "name-desc":
-          filtered.sort((a, b) => b.name.localeCompare(a.name));
-          break;
-        case "time-asc":
-          filtered.sort((a, b) => parseTime(a.time) - parseTime(b.time));
-          break;
-        case "time-desc":
-          filtered.sort((a, b) => parseTime(b.time) - parseTime(a.time));
-          break;
-      }
+    // Create backdrop
+    assignPopupBackdrop = document.createElement('div');
+    assignPopupBackdrop.style.position = 'fixed';
+    assignPopupBackdrop.style.top = 0;
+    assignPopupBackdrop.style.left = 0;
+    assignPopupBackdrop.style.width = '100vw';
+    assignPopupBackdrop.style.height = '100vh';
+    assignPopupBackdrop.style.background = 'rgba(0,0,0,0.4)';
+    assignPopupBackdrop.style.zIndex = 9998;
+    document.body.appendChild(assignPopupBackdrop);
 
-      renderUsers(filtered);
-    }
+    // Create popup
+    assignPopup = document.createElement('div');
+    assignPopup.style.position = 'fixed';
+    assignPopup.style.top = '50%';
+    assignPopup.style.left = '50%';
+    assignPopup.style.transform = 'translate(-50%, -50%)';
+    assignPopup.style.background = '#fff';
+    assignPopup.style.padding = '2rem 2.5rem';
+    assignPopup.style.borderRadius = '12px';
+    assignPopup.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
+    assignPopup.style.zIndex = 9999;
+    assignPopup.style.maxWidth = '350px';
+    assignPopup.style.textAlign = 'center';
 
-    function clearSearch() {
-      document.getElementById("searchName").value = "";
-      document.getElementById("searchTime").value = "";
-      document.getElementById("sortBy").value = "";
-      renderUsers(users);
-    }
+    // Build test dropdown for popup
+    let testOptions = tests.length
+      ? tests.map(t => `<option value="${t._id}"${t._id===selectedTestId?' selected':''}>${t.name}</option>`).join('')
+      : `<option disabled>No tests available</option>`;
 
-    window.onload = () => {
-      fetchUsers();
-      fetchAvailableTests();
+    assignPopup.innerHTML = `
+      <button id="close-assign-popup" style="position:absolute;top:10px;right:16px;font-size:22px;background:none;border:none;cursor:pointer;color:#888;">&times;</button>
+      <h2 class="text-xl font-bold mb-4">Assign Test</h2>
+      <p class="mb-2"><strong>Candidate:</strong> ${userName} (${userEmail})</p>
+      <div class="mb-4">
+        <label for="assign-test-select" class="block mb-1 font-semibold">Select Test</label>
+        <select id="assign-test-select" class="w-full p-2 border border-gray-300 rounded">
+          ${testOptions}
+        </select>
+      </div>
+      <div class="flex gap-2 justify-center mt-6">
+        <button id="confirm-assign-popup" class="bg-black text-white px-4 py-2 rounded">Assign</button>
+        <button id="cancel-assign-popup" class="bg-gray-300 text-black px-4 py-2 rounded">Cancel</button>
+      </div>
+    `;
+    document.body.appendChild(assignPopup);
+
+    // Close (X) button handler
+    document.getElementById('close-assign-popup').onclick = function() {
+      assignPopup.remove();
+      assignPopupBackdrop.remove();
     };
-      // Universal logout confirmation for all HR-dashboard pages
-    function setupLogoutButton() {
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function (e) {
-                e.preventDefault();
-                // Use a custom modal for confirmation with Cancel/Logout buttons
-                if (document.getElementById('logout-modal')) return; // Prevent multiple modals
 
-                const modal = document.createElement('div');
-                modal.id = 'logout-modal';
-                modal.style.position = 'fixed';
-                modal.style.top = 0;
-                modal.style.left = 0;
-                modal.style.width = '100vw';
-                modal.style.height = '100vh';
-                modal.style.background = 'rgba(0,0,0,0.4)';
-                modal.style.display = 'flex';
-                modal.style.alignItems = 'center';
-                modal.style.justifyContent = 'center';
-                modal.style.zIndex = 9999;
-                modal.innerHTML = `
-                  <div style="background:#fff;padding:2rem 2.5rem;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.18);max-width:350px;text-align:center;">
-                    <h2 class="text-xl font-bold mb-4">Log out?</h2>
-                    <p class="mb-6">Are you sure you want to log out?</p>
-                    <div style="display:flex;gap:1rem;justify-content:center;">
-                      <button id="cancel-logout" style="padding:0.5rem 1.5rem;border-radius:8px;background:#e5e7eb;color:#222;border:none;font-weight:500;cursor:pointer;">Cancel</button>
-                      <button id="confirm-logout" style="padding:0.5rem 1.5rem;border-radius:8px;background:#000;color:#fff;border:none;font-weight:500;cursor:pointer;">Logout</button>
-                    </div>
-                  </div>
-                `;
-                document.body.appendChild(modal);
+    // Cancel handler
+    document.getElementById('cancel-assign-popup').onclick = function() {
+      assignPopup.remove();
+      assignPopupBackdrop.remove();
+    };
 
-                document.getElementById('cancel-logout').onclick = function() {
-                    document.body.removeChild(modal);
-                };
-                document.getElementById('confirm-logout').onclick = function() {
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    window.location.href = '/login-page/login.html';
-                };
-            });
-        }
-    }
-    setupLogoutButton();
-
-    // Assign button logic with test selection modal
-    let assignPopup = null;
-    let assignPopupBackdrop = null;
-
-    document.addEventListener('click', async function(e) {
-      if (e.target.classList.contains('assign-candidate-btn')) {
-        const btn = e.target;
-        const userId = btn.getAttribute('data-user-id');
-        const userName = btn.getAttribute('data-user-name');
-        const userEmail = btn.getAttribute('data-user-email');
-        await fetchAvailableTests();
-        updateTestDropdowns();
-
-
-
-
-        // Remove any existing popup
-        if (assignPopup) assignPopup.remove();
-        if (assignPopupBackdrop) assignPopupBackdrop.remove();
-
-        // Create backdrop
-        assignPopupBackdrop = document.createElement('div');
-        assignPopupBackdrop.style.position = 'fixed';
-        assignPopupBackdrop.style.top = 0;
-        assignPopupBackdrop.style.left = 0;
-        assignPopupBackdrop.style.width = '100vw';
-        assignPopupBackdrop.style.height = '100vh';
-        assignPopupBackdrop.style.background = 'rgba(0,0,0,0.4)';
-        assignPopupBackdrop.style.zIndex = 9998;
-        document.body.appendChild(assignPopupBackdrop);
-
-        // Create popup
-        assignPopup = document.createElement('div');
-        assignPopup.style.position = 'fixed';
-        assignPopup.style.top = '50%';
-        assignPopup.style.left = '50%';
-        assignPopup.style.transform = 'translate(-50%, -50%)';
-        assignPopup.style.background = '#fff';
-        assignPopup.style.padding = '2rem 2.5rem';
-        assignPopup.style.borderRadius = '12px';
-        assignPopup.style.boxShadow = '0 8px 32px rgba(0,0,0,0.18)';
-        assignPopup.style.zIndex = 9999;
-        assignPopup.style.maxWidth = '350px';
-        assignPopup.style.textAlign = 'center';
-
-        // Build test dropdown
-        let testOptions = tests.length
-  ? tests.map(t => `<option value="${t._id}">${t.name}</option>`).join('')
-  : `<option disabled>No tests available</option>`;
-
-
-        assignPopup.innerHTML = `
-          <button id="close-assign-popup" style="position:absolute;top:10px;right:16px;font-size:22px;background:none;border:none;cursor:pointer;color:#888;">&times;</button>
-          <h2 class="text-xl font-bold mb-4">Assign Test</h2>
-          <p class="mb-2"><strong>Candidate:</strong> ${userName} (${userEmail})</p>
-          <div class="mb-4">
-            <label for="assign-test-select" class="block mb-1 font-semibold">Select Test</label>
-              <select id="assign-test-select" class="w-full p-2 border border-gray-300 rounded">
-  ${testOptions}
-</select>
-          </div>
-          <div class="flex gap-2 justify-center mt-6">
-            <button id="confirm-assign-popup" class="bg-black text-white px-4 py-2 rounded">Assign</button>
-            <button id="cancel-assign-popup" class="bg-gray-300 text-black px-4 py-2 rounded">Cancel</button>
-          </div>
-        `;
-        document.body.appendChild(assignPopup);
-
-        // Close (X) button handler
-        document.getElementById('close-assign-popup').onclick = function() {
-          assignPopup.remove();
-          assignPopupBackdrop.remove();
-        };
-
-        // Cancel handler
-        document.getElementById('cancel-assign-popup').onclick = function() {
-          assignPopup.remove();
-          assignPopupBackdrop.remove();
-        };
-
-        // Confirm handler
-        document.getElementById('confirm-assign-popup').onclick = async function() {
-          const select = document.getElementById('assign-test-select');
-          const testId = select.value;
-          const testName = select.options[select.selectedIndex]?.text || 'Test';
-          if (!testId) {
-            alert('Please select a test.');
-            return;
-          }
-          const confirmBtn = document.getElementById('confirm-assign-popup');
-          confirmBtn.disabled = true;
-          confirmBtn.textContent = 'Assigning...';
-          try {
-            const res = await fetch(`/api/tests/${testId}/assign`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({userId})
-            });
-            const result = await res.json();
-            if (res.ok) {
-              btn.textContent = 'Assigned';
-              btn.classList.remove('bg-blue-600');
-              btn.classList.add('bg-gray-400');
-              btn.disabled = true;
-              btn.nextElementSibling.style.display = 'inline';
-              alert('Assignment email sent to ' + userName + ' for test "' + testName + '"!');
-              assignPopup.remove();
-              assignPopupBackdrop.remove();
-            } else {
-              confirmBtn.textContent = 'Assign';
-              confirmBtn.disabled = false;
-              alert(result.message || 'Failed to assign test.');
-            }
-          } catch (err) {
-            confirmBtn.textContent = 'Assign';
-            confirmBtn.disabled = false;
-            alert('Network error.');
-          }
-        };
+    // Confirm handler
+    document.getElementById('confirm-assign-popup').onclick = async function() {
+      const select = document.getElementById('assign-test-select');
+      const testId = select.value;
+      const testName = select.options[select.selectedIndex]?.text || 'Test';
+      if (!testId) {
+        alert('Please select a test.');
+        return;
       }
-    });
+      const confirmBtn = document.getElementById('confirm-assign-popup');
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Assigning...';
+      try {
+        const res = await fetch(`/api/tests/${testId}/assign`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({userId})
+        });
+        const result = await res.json();
+        if (res.ok) {
+          // If assigned to the currently selected test, update UI
+          if (testId === selectedTestId) {
+            assignedCandidates.push(userId);
+            updateAssignButtons();
+          }
+          alert('Assignment email sent to ' + userName + ' for test "' + testName + '"!');
+          assignPopup.remove();
+          assignPopupBackdrop.remove();
+        } else {
+          confirmBtn.textContent = 'Assign';
+          confirmBtn.disabled = false;
+          alert(result.message || 'Failed to assign test.');
+        }
+      } catch (err) {
+        confirmBtn.textContent = 'Assign';
+        confirmBtn.disabled = false;
+        alert('Network error.');
+      }
+    };
+  }
+});
   </script>
   <script src="/user-dashboard/user-page.js"></script>
 </body>

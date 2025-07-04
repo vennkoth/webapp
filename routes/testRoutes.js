@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 const Test = require('../models/Test');
 const { auth, authorize } = require('../middleware/authMiddleware');
-
+const sendTestAssignmentMail = require('../sendTestAssignmentMail');
+const User = require('../models/User');
+// Test Routes
 // ✅ CREATE A NEW TEST (PUBLIC)
 router.post('/', async (req, res) => {
     try {
@@ -237,22 +239,63 @@ router.post('/:testId/assign', async (req, res) => {
         const { testId } = req.params;
         const { userId } = req.body;
 
-        if (!userId) return res.status(400).json({ message: 'User ID is required' });
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is required' });
+        }
 
         const test = await Test.findById(testId);
-        if (!test) return res.status(404).json({ message: 'Test not found' });
+        if (!test) {
+            return res.status(404).json({ message: 'Test not found.' });
+        }
 
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        // Add user to candidates if not already assigned
         if (!test.candidates.includes(userId)) {
             test.candidates.push(userId);
             await test.save();
         }
 
-        res.status(200).json({ message: 'Candidate assigned', test });
+        // Save assignment under user profile
+        await User.findByIdAndUpdate(
+            userId,
+            {
+                $push: {
+                    assignedTests: {
+                        testId,
+                        assignedAt: new Date()
+                    }
+                }
+            }
+        );
+
+        // Build test link
+        const link = `http://localhost:5000/take-test/${testId}/${userId}`;
+
+        // Send email notification
+        await sendTestAssignmentMail(
+        user.email,
+        user.fullName,
+        test.name,
+        link,
+        test.duration
+    );
+
+
+        res.status(200).json({
+            message: `Test "${test.name}" assigned to ${user.fullName} and email sent.`,
+            test
+        });
+
     } catch (err) {
-        console.error('Assign error:', err);
-        res.status(500).json({ message: 'Server error' });
+        console.error('[ASSIGN TEST ERROR]', err);
+        res.status(500).json({ message: 'Error assigning test', error: err.message });
     }
 });
+
 
 // ✅ REMOVE CANDIDATE FROM TEST
 router.post('/:testId/remove', async (req, res) => {

@@ -1,4 +1,3 @@
-// models/User.js
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -21,12 +20,21 @@ const userSchema = new mongoose.Schema({
         enum: ['student', 'admin'],
         default: 'student'
     },
-    // Student-specific fields
     dob: String,
     collegeName: String,
     course: String,
     yearOfStudy: String,
-    resumeUrl: String
+    resumeUrl: String,
+
+    assignedTests: [
+        {
+            testId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Test'
+            },
+            assignedAt: Date
+        }
+    ]
 }, {
     timestamps: true
 });
@@ -38,8 +46,9 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
-// Compare password for login
 userSchema.methods.comparePassword = async function (candidatePassword) {
     return await bcrypt.compare(candidatePassword, this.password);
 };
+
 module.exports = mongoose.model('User', userSchema);
+// This code defines a Mongoose schema for a User model, which includes fields for full name, email, password, role, date of birth, college name, course, year of study, resume URL, and assigned tests. It also includes password hashing functionality and a method to compare passwords.
